@@ -1,10 +1,10 @@
 #ifndef TCPSERVER_H
 #define TCPSERVER_H
 
+#include "functions.h"
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
-
 #include <QtNetwork>
 #include <QByteArray>
 #include <QDebug>
@@ -29,5 +29,7 @@ private:
     std::string msg;
     QMap<int, QTcpSocket*> mp;
 };
+
+QByteArray parsing(string msg);
 
 #endif // TCPSERVER_H

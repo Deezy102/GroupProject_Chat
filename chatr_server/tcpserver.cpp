@@ -1,13 +1,13 @@
 #include "tcpserver.h"
 #include <QCoreApplication>
-#include <QDebug>
+#include "functions.h"
 
 tcpServer::tcpServer(QObject *parent) : QObject(parent)
 {
     serv = new QTcpServer(this);
     connect(serv, &QTcpServer::newConnection,this, &tcpServer::slotNewConnection);
 
-    if (serv->listen(QHostAddress("192.168.1.5"), 12345))
+    if (serv->listen(QHostAddress("26.53.118.97"), 12345))
     {
         server_status = true;
         user_counts = 0;
@@ -36,11 +36,11 @@ void tcpServer::slotNewConnection()
     if (server_status)
     {
         user_counts++;
-        qDebug() << QString::fromUtf8("У нас новое соединение!\nКоличество пользователей ") << user_counts;
+        qDebug() << QString::fromUtf8("У нас новое соединение! Количество пользователей ") << user_counts;
         QTcpSocket* clientSock=serv->nextPendingConnection();
         int id = clientSock->socketDescriptor();
         mp[id] = clientSock;
-        mp[id]->write("vlad xyi");
+        mp[id]->write("Hello");
         connect(mp[id], &QTcpSocket::readyRead, this, &tcpServer::slotServerRead);
         connect(mp[id], &QTcpSocket::disconnected, this, &tcpServer::slotDisconect);
     }
@@ -54,7 +54,7 @@ void tcpServer::slotServerRead()
     {
         QByteArray arr = clientsock->readAll();
         msg = arr.toStdString();
-        qDebug() << QString::fromStdString(msg);
+        clientsock->write(parsing(msg));
     }
 }
 
@@ -66,4 +66,24 @@ void tcpServer::slotDisconect()
     mp.remove(id);
     user_counts--;
     qDebug() << "client disconected";
+}
+
+QByteArray parsing(string msg)
+{
+    string buf = msg.substr(0,msg.find("&"));
+    msg.erase(0,buf.size() + 1);
+    if (buf == "auth")
+    {
+        if (check(msg))
+            return "successful login";
+        else
+            return "invalid login or password";
+    }
+    if (buf == "reg")
+    {
+        if (registration(msg))
+            return "successful reg";
+        else
+            return "choose antoher login";
+    }
 }

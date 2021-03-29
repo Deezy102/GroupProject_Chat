@@ -1,5 +1,3 @@
  
-123 123
-admin pass
+abc dfg
 g.v.letov 123456
-qwert 12

@@ -1,13 +1,15 @@
 #ifndef TCPSERVER_H
 #define TCPSERVER_H
 
-#include "functions.h"
+#include "database.h"
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QtNetwork>
 #include <QByteArray>
 #include <QDebug>
+
+
 
 class tcpServer : public QObject
 {
@@ -28,6 +30,8 @@ private:
     int user_counts;
     std::string msg;
     QMap<int, QTcpSocket*> mp;
+signals:
+    bool check(string logpass);
 };
 
 QByteArray parsing(string msg);

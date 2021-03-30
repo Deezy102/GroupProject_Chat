@@ -46,17 +46,7 @@ bool check(string logpass)
     logpass.erase(0,name.size() + 1);
     string password = logpass.substr(0,logpass.find("&"));
     logpass.erase(0,password.size() + 1);
-    map<string,string> buf = read_from_file();
-    map<string, string>::iterator iter;
-    auto search = buf.find(name);
-    if (search != buf.end() && (*search).second == password)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return auth_check(name, password);
 }
 
 bool registration(string logpass)
@@ -65,19 +55,7 @@ bool registration(string logpass)
     logpass.erase(0,name.size() + 1);
     string password = logpass.substr(0,logpass.find("&"));
     logpass.erase(0,password.size() + 1);
-    map<string,string> buf = read_from_file();
-    map<string, string>::iterator iter;
-    auto search = buf.find(name);
-    if (search != buf.end())
-    {
-        return false;
-    }
-    else
-    {
-        buf.insert(make_pair(name, password));
-        write_to_file(buf);
-        return true;
-    }
+    return reg_check(name, password);
 }
 
 

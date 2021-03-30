@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     client_sock = new QTcpSocket(this);
-    client_sock->connectToHost("26.53.118.97", 12345);
+    client_sock->connectToHost("127.0.0.1", 12345);
     connect(client_sock,SIGNAL(connected()),SLOT(slot_connected()));
     connect(client_sock,SIGNAL(readyRead()),SLOT(slot_readyRead()));
 }

@@ -7,7 +7,7 @@ tcpServer::tcpServer(QObject *parent) : QObject(parent)
     serv = new QTcpServer(this);
     connect(serv, &QTcpServer::newConnection,this, &tcpServer::slotNewConnection);
 
-    if (serv->listen(QHostAddress("26.53.118.97"), 12345))
+    if (serv->listen(QHostAddress("127.0.0.1"), 12345))
     {
         server_status = true;
         user_counts = 0;
@@ -43,6 +43,7 @@ void tcpServer::slotNewConnection()
         mp[id]->write("Hello");
         connect(mp[id], &QTcpSocket::readyRead, this, &tcpServer::slotServerRead);
         connect(mp[id], &QTcpSocket::disconnected, this, &tcpServer::slotDisconect);
+
     }
 }
 

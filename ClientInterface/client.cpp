@@ -1,6 +1,8 @@
 #include "client.h"
 #include "Funcs.h"
 
+QString client_login = "";
+
 Client::Client(QObject *parent) : QObject(parent)
 {
 
@@ -20,7 +22,6 @@ void Client::slot_disconnected()
     client_sock->close();
 }
 
-
 void Client::slot_readyRead()
 {
     QByteArray array;
@@ -32,10 +33,12 @@ void Client::slot_readyRead()
         message += array.toStdString();
     }
     qDebug() << QString::fromStdString(message);
+    qDebug() << client_login;
 }
 
 void Client::receiveLogData(QString l_username, QString l_password)
 {
+    client_login = l_username;
     client_sock->write(server_query(l_username, l_password, "auth"));
 }
 

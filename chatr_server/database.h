@@ -27,8 +27,4 @@ QByteArray parsing(string msg);
 QByteArray authorization(string logpass);
 QByteArray registration(string logpass);
 
-
-bool auth_check(string login, string pass);
-bool reg_check(string login, string pass);
-
 #endif // DATABASE_H

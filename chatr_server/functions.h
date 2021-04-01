@@ -9,9 +9,7 @@
 #include <QTcpSocket>
 
 #include "database.h"
-//bd-connect
 #include <QtSql/QtSql>
-//#include <QtSql/QSql>
 #include <QSqlDatabase>
 #include <QSqlQuery>
 

@@ -2,6 +2,7 @@
 #include <QCoreApplication>
 #include "functions.h"
 
+
 tcpServer::tcpServer(QObject *parent) : QObject(parent)
 {
     serv = new QTcpServer(this);
@@ -11,10 +12,10 @@ tcpServer::tcpServer(QObject *parent) : QObject(parent)
     {
         server_status = true;
         user_counts = 0;
-        qDebug() << "started";
+        qDebug() << "server started";
     }
     else
-        qDebug() << "not started";
+        qDebug() << "server not started";
 }
 
 tcpServer::~tcpServer()
@@ -40,7 +41,7 @@ void tcpServer::slotNewConnection()
         QTcpSocket* clientSock=serv->nextPendingConnection();
         int id = clientSock->socketDescriptor();
         mp[id] = clientSock;
-        mp[id]->write("Hello");
+        mp[id]->write("u connected to the server");
         connect(mp[id], &QTcpSocket::readyRead, this, &tcpServer::slotServerRead);
         connect(mp[id], &QTcpSocket::disconnected, this, &tcpServer::slotDisconect);
 
@@ -73,6 +74,7 @@ QByteArray parsing(string msg)
 {
     string buf = msg.substr(0,msg.find("&"));
     msg.erase(0,buf.size() + 1);
+    database db;
     if (buf == "auth")
     {
         if (check(msg))
@@ -83,7 +85,7 @@ QByteArray parsing(string msg)
     if (buf == "reg")
     {
         if (registration(msg))
-            return "successful reg";
+            return "successful registration";
         else
             return "choose antoher login";
     }

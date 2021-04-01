@@ -13,6 +13,6 @@ QByteArray server_query(QString name, QString password, QString funcSwitch)
     QString message = funcSwitch+"&"+name+"&"+password;
     //qDebug() << message;
     QByteArray array;
-    array.append(message);
+    array.append(message.toUtf8());
     return array;
 }

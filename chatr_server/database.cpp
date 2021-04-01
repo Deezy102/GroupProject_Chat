@@ -39,7 +39,6 @@ bool write_to_file(map<string, string> &mp)
 
         return false;
     }
-
 }
 
 QByteArray parsing(string msg)
@@ -51,7 +50,7 @@ QByteArray parsing(string msg)
         return authorization(msg);
     if (buf == "reg")
         return registration(msg);
-
+    return "error";
 }
 
 QSqlDatabase init_db()
@@ -78,7 +77,7 @@ QSqlDatabase init_db()
 QByteArray registration(string logpass)
 {
     QString login = QString::fromStdString(logpass.substr(0,logpass.find("&")));
-    QString password = QString::fromStdString(logpass.substr(logpass.rfind("&"), logpass.length()));
+    QString password = QString::fromStdString(logpass.substr(logpass.rfind("&") + 1, logpass.length()));
 
     QSqlDatabase db = init_db();
 
@@ -107,7 +106,7 @@ QByteArray registration(string logpass)
 QByteArray authorization(string logpass)
 {
     QString login = QString::fromStdString(logpass.substr(0,logpass.find("&")));
-    QString password = QString::fromStdString(logpass.substr(logpass.rfind("&"), logpass.length()));
+    QString password = QString::fromStdString(logpass.substr(logpass.rfind("&") + 1, logpass.length()));
 
     QSqlDatabase db = init_db();
 
@@ -117,11 +116,11 @@ QByteArray authorization(string logpass)
     qr.bindValue(":password", password);
     qr.exec();
 
-    bool flag_qr = qr.size();
+    int flag_qr = qr.size();
 
     db.close();
 
-    if (flag_qr)
+    if (flag_qr == 1)
         return "successful login";
 
     return "invalid login or password";

@@ -31,6 +31,7 @@ private:
     int user_counts;
     std::string msg;
     QMap<int, QTcpSocket*> mp;
+
 signals:
     bool check(string logpass);
 };

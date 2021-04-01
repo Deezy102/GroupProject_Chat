@@ -43,9 +43,8 @@ void Client::receiveRegData(QString l_username, QString l_password, QString l_ve
 {
    if (correctLogPass(l_username, l_password, l_verpassword))
    {
-       qDebug() << "correctlogpas";
        client_sock->write(server_query(l_username, l_password, "reg"));
    }
    else
-       qDebug() << "sosat";
+       qDebug() << "invalid verifpass";
 }

@@ -47,5 +47,10 @@ void Client::receiveRegData(QString l_username, QString l_password, QString l_ve
        client_sock->write(server_query(l_username, l_password, "reg"));
    }
    else
-       qDebug() << "sosat";
+       qDebug() << "Incorrect";
+}
+
+void Client::reconnect()
+{
+    client_sock->connectToHost(ipAddress, 12345);
 }

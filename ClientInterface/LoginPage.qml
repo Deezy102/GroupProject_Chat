@@ -19,9 +19,8 @@ Page {
             anchors.top: parent.top
             anchors.topMargin: 69
             color: "#ffffff"
-            text: qsTr("Wellcome!")
+            text: "Wellcome!"
             font.pixelSize: 24
-            anchors.horizontalCenterOffset: 0
             font.bold: true
         }
 
@@ -46,8 +45,6 @@ Page {
             Text {
                 id: signInTextItem
                 text: "Sign In"
-
-                opacity: enabled ? 1.0 : 0.3
                 color: "#ffffff"
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -59,7 +56,6 @@ Page {
                 id: signInButtonBackground
                 implicitWidth: 100
                 implicitHeight: 40
-                opacity: enabled ? 1 : 0.3
                 color: "#242424"
                 border.color: "#FF0040"
                 border.width: 1
@@ -90,7 +86,6 @@ Page {
                 id: signUpTextItem
                 text: "Sign Up"
 
-                opacity: enabled ? 1.0 : 0.3
                 color: "#ffffff"
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -128,7 +123,6 @@ Page {
                 id: signUpSwitchTextItem
                 text: "Sign Up"
 
-                opacity: enabled ? 1.0 : 0.3
                 color: "#ffffff"
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -140,7 +134,7 @@ Page {
                 id: signUpSwitchButtonBackground
                 implicitWidth: 100
                 implicitHeight: 40
-                opacity: enabled ? 1 : 0.3
+
                 color: "#242424"
                 border.color: "#FF0040"
                 border.width: 1
@@ -154,17 +148,25 @@ Page {
             }
         }
 
-        Image {
-            id: ghoul_eye
+        Button {
+            id: reconnectButton
+            width: 124
+            height: 78
             anchors.left: parent.left
             anchors.leftMargin: 20
             anchors.top: parent.top
             anchors.topMargin: 20
-            width: 124
-            source: "ghoul_eye.png"
-            fillMode: Image.PreserveAspectFit
-        }
 
+            Image {
+                id: ghoul_eye
+                anchors.fill: parent
+                width: 124
+                source: "ghoul_eye.png"
+                fillMode: Image.PreserveAspectFit
+            }
+
+            onClicked: client.reconnect()
+        }
         RoundButton {
             id: backButton
             anchors.top: parent.top
@@ -174,12 +176,6 @@ Page {
             width: 40
             height: 40
             visible: false
-            implicitWidth: Math.max(
-                               backButtonBackground ? backButtonBackground.implicitWidth : 0,
-                               textItem.implicitWidth + leftPadding + rightPadding)
-            implicitHeight: Math.max(
-                                backButtonBackground ? backButtonBackground.implicitHeight : 0,
-                                textItem.implicitHeight + topPadding + bottomPadding)
 
             font.pointSize: 12
 

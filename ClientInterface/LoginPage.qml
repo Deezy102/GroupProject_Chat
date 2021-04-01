@@ -345,6 +345,11 @@ Page {
                 target: signUpSwitchButton
                 visible: false
             }
+
+            PropertyChanges {
+                target: signin_button
+                visible: false
+            }
         }
 
     ]

@@ -1,14 +1,15 @@
+#pragma once
 #ifndef TCPSERVER_H
 #define TCPSERVER_H
 
 #include "database.h"
+#include <QCoreApplication>
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QtNetwork>
 #include <QByteArray>
 #include <QDebug>
-
 
 
 class tcpServer : public QObject
@@ -34,6 +35,7 @@ signals:
     bool check(string logpass);
 };
 
-QByteArray parsing(string msg);
+
+
 
 #endif // TCPSERVER_H

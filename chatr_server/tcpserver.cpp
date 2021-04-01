@@ -1,6 +1,5 @@
 #include "tcpserver.h"
-#include <QCoreApplication>
-#include "functions.h"
+
 
 
 tcpServer::tcpServer(QObject *parent) : QObject(parent)
@@ -70,23 +69,4 @@ void tcpServer::slotDisconect()
     qDebug() << "client disconected";
 }
 
-QByteArray parsing(string msg)
-{
-    string buf = msg.substr(0,msg.find("&"));
-    msg.erase(0,buf.size() + 1);
-    database db;
-    if (buf == "auth")
-    {
-        if (check(msg))
-            return "successful login";
-        else
-            return "invalid login or password";
-    }
-    if (buf == "reg")
-    {
-        if (registration(msg))
-            return "successful registration";
-        else
-            return "choose antoher login";
-    }
-}
+

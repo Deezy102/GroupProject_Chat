@@ -11,7 +11,7 @@ bool correctLogPass(QString login, QString pass, QString verpass)
 QByteArray server_query(QString name, QString password, QString funcSwitch)
 {
     QString message = funcSwitch+"&"+name+"&"+password;
-    qDebug() << message;
+    //qDebug() << message;
     QByteArray array;
     array.append(message);
     return array;

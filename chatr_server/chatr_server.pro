@@ -11,7 +11,6 @@ CONFIG -= app_bundle
 
 SOURCES += \
         database.cpp \
-        functions.cpp \
         main.cpp \
         tcpserver.cpp
 
@@ -22,5 +21,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     database.h \
-    functions.h \
     tcpserver.h

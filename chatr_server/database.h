@@ -1,3 +1,4 @@
+#pragma once
 #ifndef DATABASE_H
 #define DATABASE_H
 
@@ -7,22 +8,25 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <string>
+#include <fstream>
 
+using std::map;
+using std::ifstream;
+using std::ofstream;
+using std::pair;
 using std::string;
 
-
-class database
-{
-
-public:
+map<string, string> read_from_file();
+bool write_to_file(map<string, string> &mp);
 
 
-    database();
-    QSqlDatabase db;
+QSqlDatabase init_db();
+void close_db(QSqlDatabase db, QString db_name);
 
-private:
+QByteArray parsing(string msg);
+QByteArray authorization(string logpass);
+QByteArray registration(string logpass);
 
-};
 
 bool auth_check(string login, string pass);
 bool reg_check(string login, string pass);

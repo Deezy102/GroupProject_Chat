@@ -7,7 +7,7 @@ tcpServer::tcpServer(QObject *parent) : QObject(parent)
     serv = new QTcpServer(this);
     connect(serv, &QTcpServer::newConnection,this, &tcpServer::slotNewConnection);
 
-    if (serv->listen(QHostAddress("127.0.0.1"), 12345))
+    if (serv->listen(QHostAddress(ipAddress), 12345))
     {
         server_status = true;
         user_counts = 0;

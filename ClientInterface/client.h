@@ -27,7 +27,7 @@ private slots:
 
 private:
     QTcpSocket *client_sock;
-    const QString ipAddress = "127.0.0.1";
+    const QString ipAddress = "26.53.118.97";
 
 };
 

@@ -31,11 +31,13 @@ private:
     int user_counts;
     std::string msg;
     QMap<int, QTcpSocket*> mp;
+    const QString ipAddress = "26.53.118.97";
 
 signals:
     bool check(string logpass);
-};
 
+
+};
 
 
 

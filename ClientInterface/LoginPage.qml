@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import QtQuick.Dialogs 1.2
 
 Page {
     id: root
@@ -14,14 +15,13 @@ Page {
 
 
         Text {
-            id: text1
+            id: textWellcome
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: 69
             color: "#ffffff"
-            text: qsTr("Wellcome!")
+            text: "Wellcome!"
             font.pixelSize: 24
-            anchors.horizontalCenterOffset: 0
             font.bold: true
         }
 
@@ -46,8 +46,6 @@ Page {
             Text {
                 id: signInTextItem
                 text: "Sign In"
-
-                opacity: enabled ? 1.0 : 0.3
                 color: "#ffffff"
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -59,7 +57,6 @@ Page {
                 id: signInButtonBackground
                 implicitWidth: 100
                 implicitHeight: 40
-                opacity: enabled ? 1 : 0.3
                 color: "#242424"
                 border.color: "#FF0040"
                 border.width: 1
@@ -90,7 +87,6 @@ Page {
                 id: signUpTextItem
                 text: "Sign Up"
 
-                opacity: enabled ? 1.0 : 0.3
                 color: "#ffffff"
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -128,7 +124,6 @@ Page {
                 id: signUpSwitchTextItem
                 text: "Sign Up"
 
-                opacity: enabled ? 1.0 : 0.3
                 color: "#ffffff"
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -140,7 +135,7 @@ Page {
                 id: signUpSwitchButtonBackground
                 implicitWidth: 100
                 implicitHeight: 40
-                opacity: enabled ? 1 : 0.3
+
                 color: "#242424"
                 border.color: "#FF0040"
                 border.width: 1
@@ -154,32 +149,34 @@ Page {
             }
         }
 
-        Image {
-            id: ghoul_eye
-            anchors.left: parent.left
-            anchors.leftMargin: 20
-            anchors.top: parent.top
-            anchors.topMargin: 20
+        Button {
+            id: reconnectButton
             width: 124
-            source: "ghoul_eye.png"
-            fillMode: Image.PreserveAspectFit
-        }
+            height: 78
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.top: parent.top
+            anchors.topMargin: 10
 
+            Image {
+                id: ghoul_eye
+                anchors.fill: parent
+                width: 124
+                source: "ghoul_eye.png"
+                fillMode: Image.PreserveAspectFit
+            }
+
+            onClicked: client.reconnect()
+        }
         RoundButton {
             id: backButton
             anchors.top: parent.top
-            anchors.topMargin: 20
+            anchors.topMargin: 10
             anchors.right: parent.right
-            anchors.rightMargin: 20
+            anchors.rightMargin: 10
             width: 40
             height: 40
             visible: false
-            implicitWidth: Math.max(
-                               backButtonBackground ? backButtonBackground.implicitWidth : 0,
-                               textItem.implicitWidth + leftPadding + rightPadding)
-            implicitHeight: Math.max(
-                                backButtonBackground ? backButtonBackground.implicitHeight : 0,
-                                textItem.implicitHeight + topPadding + bottomPadding)
 
             font.pointSize: 12
 
@@ -227,7 +224,7 @@ Page {
             width: 200
             height: 40
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: text1.bottom
+            anchors.top: textWellcome.bottom
             anchors.topMargin: 40
 
             placeholderTextColor: "#ccc7c5c5"

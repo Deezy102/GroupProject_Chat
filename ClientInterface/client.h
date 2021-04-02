@@ -18,12 +18,13 @@ signals:
 public slots:
     void receiveLogData(QString l_username, QString l_password);
     void receiveRegData(QString l_username, QString l_password, QString l_verpassword);
-
+    void reconnect();
 private slots:
     void slot_connected();
     void slot_readyRead();
     //void slot_send_to_server(QString message);
     void slot_disconnected();
+
 
 private:
     QTcpSocket *client_sock;

@@ -1,4 +1,3 @@
-*.zip
 # C++ objects and libs
 *.slo
 *.lo
@@ -10,7 +9,6 @@
 *.so.*
 *.dll
 *.dylib
-.vs
 
 # Qt-es
 object_script.*.Release
@@ -52,37 +50,3 @@ compile_commands.json
 
 # QtCreator local machine specific files for imported projects
 *creator.user*
-
-*_qmlcache.qrc
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app

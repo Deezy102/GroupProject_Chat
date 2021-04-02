@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import QtQuick.Dialogs 1.2
 
 Page {
     id: root
@@ -14,7 +15,7 @@ Page {
 
 
         Text {
-            id: text1
+            id: textWellcome
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: 69
@@ -153,9 +154,9 @@ Page {
             width: 124
             height: 78
             anchors.left: parent.left
-            anchors.leftMargin: 20
+            anchors.leftMargin: 10
             anchors.top: parent.top
-            anchors.topMargin: 20
+            anchors.topMargin: 10
 
             Image {
                 id: ghoul_eye
@@ -170,9 +171,9 @@ Page {
         RoundButton {
             id: backButton
             anchors.top: parent.top
-            anchors.topMargin: 20
+            anchors.topMargin: 10
             anchors.right: parent.right
-            anchors.rightMargin: 20
+            anchors.rightMargin: 10
             width: 40
             height: 40
             visible: false
@@ -223,7 +224,7 @@ Page {
             width: 200
             height: 40
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: text1.bottom
+            anchors.top: textWellcome.bottom
             anchors.topMargin: 40
 
             placeholderTextColor: "#ccc7c5c5"

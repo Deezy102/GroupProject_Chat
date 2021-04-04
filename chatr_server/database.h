@@ -21,7 +21,7 @@ bool write_to_file(map<string, string> &mp);
 
 
 QSqlDatabase init_db();
-void close_db(QSqlDatabase db, QString db_name);
+//void close_db(QSqlDatabase db, QString db_name);
 
 QByteArray parsing(string msg);
 QByteArray authorization(string logpass);

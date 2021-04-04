@@ -14,11 +14,17 @@ public:
     explicit Client(QObject *parent = nullptr);
 
 signals:
+    void serverSucReg(); // сигнал удачной регистарции
+    void serverFailReg(); // сигнал провальной регистрации
+    void serverSucAuth();
+    void serverFailAuth();
 
 public slots:
     void receiveLogData(QString l_username, QString l_password);
     void receiveRegData(QString l_username, QString l_password, QString l_verpassword);
+    void parsing(QString msg);
     void reconnect();
+
 private slots:
     void slot_connected();
     void slot_readyRead();
@@ -28,8 +34,8 @@ private slots:
 
 private:
     QTcpSocket *client_sock;
-    const QString ipAddress = "26.53.118.97";
-
+    const QString ipAddress = "127.0.0.1";
 };
+
 
 #endif // CLIENT_H

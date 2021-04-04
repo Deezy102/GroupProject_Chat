@@ -10,6 +10,11 @@ Client::Client(QObject *parent) : QObject(parent)
     client_sock->connectToHost(ipAddress, 12345);
     connect(client_sock,SIGNAL(connected()),SLOT(slot_connected()));
     connect(client_sock,SIGNAL(readyRead()),SLOT(slot_readyRead()));
+//    connect(client_sock,SIGNAL(serverSucReg()),SLOT(parsing()));
+//    connect(client_sock,SIGNAL(serverFailReg()),SLOT(parsing()));
+//    connect(client_sock,SIGNAL(serverFailAuth()),SLOT(parsing()));
+//    connect(client_sock,SIGNAL(serverSucAuth()),SLOT(parsing()));
+
 }
 
 void Client::slot_connected()
@@ -22,6 +27,19 @@ void Client::slot_disconnected()
     client_sock->close();
 }
 
+void Client::parsing(QString msg)
+{
+    if (msg == "successful login")
+        emit serverSucAuth();
+    if (msg == "invalid login or password")
+        emit serverFailAuth();
+    if (msg == "successful registration")
+        emit serverSucReg();
+    if (msg == "choose antoher login")
+        emit serverFailReg();
+
+}
+
 void Client::slot_readyRead()
 {
     QByteArray array;
@@ -32,7 +50,7 @@ void Client::slot_readyRead()
         array = client_sock->readAll();
         message += array.toStdString();
     }
-    qDebug() << QString::fromStdString(message);
+    parsing(QString::fromStdString(message));
     qDebug() << client_login;
 }
 
@@ -50,7 +68,6 @@ void Client::receiveRegData(QString l_username, QString l_password, QString l_ve
    }
    else
    qDebug() << "invalid verifpass";
-
 }
 
 void Client::reconnect()

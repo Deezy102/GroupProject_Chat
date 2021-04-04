@@ -16,3 +16,5 @@ QByteArray server_query(QString name, QString password, QString funcSwitch)
     array.append(message.toUtf8());
     return array;
 }
+
+

@@ -28,3 +28,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     client.h \
     funcs.h
+
+DISTFILES += \
+    Style.qml

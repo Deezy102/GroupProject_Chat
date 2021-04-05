@@ -5,7 +5,55 @@ import QtQuick.Dialogs 1.2
 
 Page {
     id: root
-    signal signInButtonClicked();
+    signal sucAuth();
+
+
+
+    Connections {
+        target: client
+
+        onServerSucReg: {
+            popup.open()
+        }
+
+        onServerFailReg: {
+            incorrect.text = "Sign ip failed"
+            incorrect.visible = true
+        }
+
+        onServerSucAuth: root.sucAuth()
+
+        onServerFailAuth: {
+            incorrect.text = "Sign in failed"
+            incorrect.visible = true
+        }
+    }
+
+    Popup {
+        id: popup
+        anchors.centerIn: Overlay.overlay
+        width: 200
+        height: 150
+        modal: true
+        focus: true
+
+
+
+        Button {
+            id: okButton
+            anchors.centerIn: parent
+            text: "Ok"
+
+            onClicked: popup.close()
+        }
+
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+        contentItem: Text {
+            anchors.centerIn: parent
+            font.pixelSize: 18
+            text: "Successful registration"
+            }
+    }
 
     Rectangle {
         id: backgroundRect
@@ -13,6 +61,20 @@ Page {
         visible: true
         color: "#242424"
 
+        Text {
+            id: incorrect
+            height: 40
+            anchors.left: verifyPasswordField.left
+            anchors.top: verifyPasswordField.bottom
+            anchors.topMargin: 10
+
+            visible: false
+            color: "#FF0040"
+            font.pixelSize: 12
+
+
+
+        }
 
         Text {
             id: textWellcome
@@ -40,7 +102,6 @@ Page {
 
             onClicked: {
                 client.receiveLogData(usernameField.text, passwordField.text)
-                root.signInButtonClicked()
             }
 
             Text {
@@ -206,12 +267,6 @@ Page {
                 radius: 20
             }
 
-            Connections {
-                target: backButton
-                function onClicked() {
-                    page.state = "signinState"
-                }
-            }
 
             Connections {
                 target: backButton
@@ -298,6 +353,11 @@ Page {
             name: "signinState"
 
             PropertyChanges {
+                target: incorrect
+                visible: false
+            }
+
+            PropertyChanges {
                 target: backButton
                 visible: false
             }
@@ -309,6 +369,11 @@ Page {
         },
         State {
             name: "signupState"
+
+            PropertyChanges {
+                target: incorrect
+                visible: false
+            }
 
             PropertyChanges {
                 target: backButton

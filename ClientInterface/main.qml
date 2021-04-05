@@ -22,9 +22,10 @@ ApplicationWindow {
 
     LoginPage {
         id: logPage
-        onSignInButtonClicked: {
+        onSucAuth: {
             stackview.push(chatPage);
         }
+
     }
 
     ChatPage {

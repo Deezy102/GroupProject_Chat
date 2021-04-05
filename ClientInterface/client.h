@@ -18,6 +18,7 @@ signals:
     void serverFailReg(); // сигнал провальной регистрации
     void serverSucAuth();
     void serverFailAuth();
+    void clientFailVerifpass();
 
 public slots:
     void receiveLogData(QString l_username, QString l_password);

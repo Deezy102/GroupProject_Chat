@@ -77,3 +77,8 @@ void Client::reconnect()
 {
     client_sock->connectToHost(ipAddress, 12345);
 }
+
+void Client::receiveMessage(QString msg)
+{
+    qDebug() << msg;
+}

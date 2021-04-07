@@ -102,6 +102,7 @@ Page {
 
             onClicked: {
                 client.receiveLogData(usernameField.text, passwordField.text)
+                root.sucAuth()
             }
 
             Text {

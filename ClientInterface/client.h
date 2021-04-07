@@ -25,6 +25,7 @@ public slots:
     void receiveRegData(QString l_username, QString l_password, QString l_verpassword);
     void parsing(QString msg);
     void reconnect();
+    void receiveMessage(QString msg);
 
 private slots:
     void slot_connected();

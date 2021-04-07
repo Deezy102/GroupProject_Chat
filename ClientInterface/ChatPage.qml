@@ -137,6 +137,8 @@ Page {
             contentItem: sendButtonItem
 
             onClicked: {
+                client.receiveMessage(msgField.text)
+                msgField.text = ""
 
             }
 

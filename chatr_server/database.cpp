@@ -1,6 +1,7 @@
 #include "database.h"
 
 bool flag = true;
+const string path = "D:\\chat\\chat_git\\GroupProject_Chat\\chatStorage\\";
 
 map<string, string> read_from_file()
 {
@@ -26,17 +27,16 @@ map<string, string> read_from_file()
     return mp;
 }
 
-bool write_to_file(map<string, string> &mp)
+bool write_to_file(string login, string chatName, string msg)
 {
-    map<string, string>::iterator iter;
     ofstream file;
-    file.open("D:\\chat\\db_test\\db.txt", ofstream::out | ofstream::trunc);
+    file.open(path + chatName + ".txt", ofstream::out | ofstream::app);
     if (file.is_open() == true)
     {
-        for (iter = mp.begin(); iter != mp.end(); iter++)
-        {
-            file << (*iter).first << " " << iter->second << std::endl;
-        }
+        QString time_format = "dd-MM-yy  HH:mm";
+        QDateTime qdate = QDateTime::currentDateTime();
+        QString sdate = qdate.toString(time_format);
+        file << "(" << sdate.QString::toStdString() << ")" << login << ": " << msg << std::endl;
         file.close();
         return true;
     }
@@ -56,6 +56,8 @@ QByteArray parsing(string msg)
         return authorization(msg);
     if (buf == "reg")
         return registration(msg);
+    if (buf == "msg")
+        return message(msg);
     return "error";
 }
 
@@ -131,3 +133,30 @@ QByteArray authorization(string logpass)
 
     return "invalid login or password";
 }
+
+QByteArray message(string msgData)
+{
+    qDebug() << QString::fromStdString(msgData);
+    string login = msgData.substr(0,msgData.find("&"));
+    msgData.erase(0,login.size() + 1);
+    string chatName = msgData.substr(0, msgData.find("&"));
+    msgData.erase(0,chatName.size() + 1);
+    string msg = msgData;
+    qDebug() << QString::fromStdString(login) << QString::fromStdString(chatName) << QString::fromStdString(msg);
+    write_to_file(login, chatName, msg);
+    return "null";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

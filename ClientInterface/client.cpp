@@ -73,6 +73,7 @@ void Client::receiveRegData(QString l_username, QString l_password, QString l_ve
    emit clientFailVerifpass();
 }
 
+
 void Client::reconnect()
 {
     client_sock->connectToHost(ipAddress, 12345);
@@ -80,5 +81,5 @@ void Client::reconnect()
 
 void Client::receiveMessage(QString msg)
 {
-    qDebug() << msg;
+    client_sock->write(server_query(client_login, "pudge_pidzhak", msg, "msg"));
 }

@@ -9,10 +9,13 @@
 #include <QSqlQuery>
 #include <string>
 #include <fstream>
+#include <iostream>
+#include <QDateTime>
 
 using std::map;
 using std::ifstream;
 using std::ofstream;
+using std::fstream;
 using std::pair;
 using std::string;
 
@@ -26,5 +29,6 @@ QSqlDatabase init_db();
 QByteArray parsing(string msg);
 QByteArray authorization(string logpass);
 QByteArray registration(string logpass);
+QByteArray message(string msgData);
 
 #endif // DATABASE_H

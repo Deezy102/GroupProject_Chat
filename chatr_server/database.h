@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include <QDateTime>
+#include <cstdio>
 
 using std::map;
 using std::ifstream;

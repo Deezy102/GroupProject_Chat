@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include <QDateTime>
+#include <cstdio>
 
 using std::map;
 using std::ifstream;
@@ -20,7 +21,7 @@ using std::pair;
 using std::string;
 
 map<string, string> read_from_file();
-bool write_to_file(map<string, string> &mp);
+bool write_to_file(string login, string chatName, string msg);
 
 
 QSqlDatabase init_db();

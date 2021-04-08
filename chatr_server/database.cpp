@@ -1,7 +1,7 @@
 #include "database.h"
 
 bool flag = true;
-const string path = "D:\\chat\\chat_git\\GroupProject_Chat\\chatStorage\\";
+const string path = "D:\\Chat_project\\GroupProject_Chat\\chatStorage\\";
 
 map<string, string> read_from_file()
 {
@@ -29,22 +29,48 @@ map<string, string> read_from_file()
 
 bool write_to_file(string login, string chatName, string msg)
 {
-    ofstream file;
-    file.open(path + chatName + ".txt", ofstream::out | ofstream::app);
-    if (file.is_open() == true)
+    ifstream oldFile;
+    oldFile.open(path + chatName + ".txt", ifstream::in);
+
+    if (oldFile.is_open() == true)
     {
-        QString time_format = "dd-MM-yy  HH:mm";
-        QDateTime qdate = QDateTime::currentDateTime();
-        QString sdate = qdate.toString(time_format);
-        file << "(" << sdate.QString::toStdString() << ")" << login << ": " << msg << std::endl;
-        file.close();
+        ofstream newFile;
+        newFile.open(path + chatName + "_temp.txt", ofstream::out | ofstream::app | ofstream::ate);
+
+        if (newFile.is_open())
+        {
+            QString time_format = "dd-MM-yy  HH:mm";
+            QDateTime qdate = QDateTime::currentDateTime();
+            QString sdate = qdate.toString(time_format);
+
+            newFile << "(" << sdate.QString::toStdString() << ")" << login << ": " << msg << std::endl;
+
+            string buf;
+            while (getline(oldFile, buf))
+                newFile << buf << std::endl;
+        }
+
+        oldFile.close();
+        newFile.close();
+
+        string oldPath = path + chatName + ".txt";
+        string newPath = path + chatName + "_temp.txt";
+        const char *oldChar = oldPath.c_str();
+        const char *newChar = newPath.c_str();
+
+        remove(oldChar);
+        rename(newChar, oldChar);
+
         return true;
     }
     else
     {
-
-        return false;
+        ofstream createFile;
+        createFile.open(path + chatName + ".txt", ofstream::out);
+        createFile.close();
+        write_to_file(login, chatName, msg);
     }
+    return true;
 }
 
 QByteArray parsing(string msg)
@@ -70,7 +96,7 @@ QSqlDatabase init_db()
         db.setHostName("localhost");
         db.setDatabaseName("chat");
         db.setUserName("postgres");
-        db.setPassword("    ");
+        db.setPassword("1234");
         flag = false;
     }
     else

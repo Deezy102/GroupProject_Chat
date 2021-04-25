@@ -7,16 +7,8 @@ Page {
     id: root
     signal sucAuth();
 
-    background: backgroundRect
-
-
-    Rectangle {
-        id: backgroundRect
+    background: Rectangle {
         anchors.fill: parent
-        anchors.rightMargin: 0
-        anchors.bottomMargin: 0
-        anchors.leftMargin: 0
-        anchors.topMargin: 0
         visible: true
         color: "#242424"
     }

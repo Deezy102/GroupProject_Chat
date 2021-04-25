@@ -6,7 +6,7 @@ import QtQuick.Layouts 1.12
 Page {
     id: root
     signal backButtonClicked();
-    property string inConversationWith : "chatName"
+    property string inConversationWith : ""
     property string userLogin : "Pudge_bez_moma"
 
     background: Rectangle {
@@ -31,9 +31,9 @@ Page {
                 id: menuButton
                 anchors.left: toolBar.left
                 anchors.top: toolBar.top
-                width: 30
-                height: 30
-                Layout.leftMargin: 5
+                implicitWidth: 30
+                implicitHeight: 30
+
 
                 Text {
                     text: "⋮"
@@ -67,9 +67,9 @@ Page {
                 id: backButton
                 anchors.right: toolBar.right
                 anchors.top: toolBar.top
-                width: 30
-                height: 30
-                Layout.rightMargin: 5
+                implicitWidth: 30
+                implicitHeight: 30
+
                 Text {
                     width: 30
                     height: 30
@@ -105,7 +105,7 @@ Page {
             Text {
                 text: userLogin
                 anchors.fill: parent
-                color: "#ffffff"
+                color: "#ff0040"
                 font.pixelSize: 16
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
@@ -126,7 +126,9 @@ Page {
                     font.pixelSize: 14
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: Text.AlignHCenter
+
                 }
+                focus: true
 
 
             }
@@ -135,14 +137,19 @@ Page {
 
     ScrollView {
         id: chatListScroll
-        anchors.left: parent.left
+        anchors.top: toolBar.top
+        anchors.bottom: root.bottom
+        anchors.left: root.left
         width: parent.width * 0.3
+        height: root.height-toolBar.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         ScrollBar.vertical.interactive: true
         ListView {
             id: chatListView
             anchors.left: parent.left
-            height: availableHeight
+            anchors.top: parrent.top
+            anchors.bottom: parent.bottom
+            height: parent.height - toolBar.height
             model: ["Chat 1", "Chat 2", "Chat 3", "Chat 2", "Chat 3", "Chat 2", "Chat 3", "Chat 2", "Chat 3", "Chat 2", "Chat 3", "Chat 2", "Chat 3", "Chat 2", "Chat 3"] //скорее всего надо подгружать модель с сервера при каждом логине или добавлении чата
 
             delegate: ItemDelegate {
@@ -161,7 +168,7 @@ Page {
         }
     }
     ScrollView {
-        id: chatSroll
+        id: chatScroll
         anchors.top: parent.top
         anchors.bottom: msgField.top
         anchors.right: parent.right
@@ -172,7 +179,10 @@ Page {
 
         ListView {
             id: chatView
-            anchors.fill: parent
+            anchors.top: toolBar.bottom
+            anchors.bottom: msgField.top
+            anchors.right: root.right
+            width: root.width * 0.7
             model: ["Message 1", "Message 2", "Message 3", "Message 3", "Message 3", "Message 3", "Message 3", "Message 3", "Message 3", "Message 3", "Message 3", "Message 3", "Message 3"] //надо подгружать с сервера
             delegate: ItemDelegate {
                 Text {

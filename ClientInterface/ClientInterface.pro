@@ -30,4 +30,4 @@ HEADERS += \
     funcs.h
 
 DISTFILES += \
-    Style.qml
+

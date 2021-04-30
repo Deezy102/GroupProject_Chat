@@ -1,7 +1,7 @@
 #include "database.h"
 
 bool flag = true;
-const string path = "D:\\Chat_project\\GroupProject_Chat\\chatStorage\\";
+const string path = "D:\\chat\\chat_git\\GroupProject_Chat\\chatStorage\\";
 
 map<string, string> read_from_file()
 {
@@ -96,7 +96,7 @@ QSqlDatabase init_db()
         db.setHostName("localhost");
         db.setDatabaseName("chat");
         db.setUserName("postgres");
-        db.setPassword("1234");
+        db.setPassword("    ");
         flag = false;
     }
     else

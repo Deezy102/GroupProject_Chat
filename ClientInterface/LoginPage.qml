@@ -6,6 +6,7 @@ import QtQuick.Dialogs 1.2
 Page {
     id: root
     signal sucAuth();
+    signal sendLogin(string login);
 
     background: Rectangle {
         anchors.fill: parent
@@ -101,7 +102,8 @@ Page {
 
         onClicked: {
             client.receiveLogData(usernameField.text, passwordField.text)
-            root.sucAuth()
+            userLogin = usernameField.text
+            root.sucAuth() //DELETE THIS!!!
         }
 
         Text {
@@ -139,6 +141,7 @@ Page {
         background: signUpButtonBackground
 
         contentItem: signUpTextItem
+
 
         onClicked: {
             client.receiveRegData(usernameField.text, passwordField.text, verifyPasswordField.text)

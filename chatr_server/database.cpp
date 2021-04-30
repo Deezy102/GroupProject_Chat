@@ -3,28 +3,27 @@
 bool flag = true;
 const string path = "D:\\chat\\chat_git\\GroupProject_Chat\\chatStorage\\";
 
-map<string, string> read_from_file()
+string read_from_file(string chatName)
 {
-
-    std::map<string, string> mp;
-    ifstream file("D:\\chat\\db_test\\db.txt", std::ios::in);
+    string str;
+    ifstream file(path + chatName + ".txt", std::ios::in);
     if (!file.is_open())
     {
         qDebug() << "try again";
     }
     else
     {
-        while (!file.eof())
+        int counter = 0;
+        while (!file.eof() && counter < 10)
         {
-            string name;
-            string pass;
-            file >> name;
-            file >> pass;
-            mp.insert(make_pair(name, pass));
+            string buf;
+            std::getline(file, buf);
+            str += buf + " &";
+            counter++;
         }
     }
     file.close();
-    return mp;
+    return str;
 }
 
 bool write_to_file(string login, string chatName, string msg)
@@ -170,7 +169,7 @@ QByteArray message(string msgData)
     string msg = msgData;
     qDebug() << QString::fromStdString(login) << QString::fromStdString(chatName) << QString::fromStdString(msg);
     write_to_file(login, chatName, msg);
-    return "null";
+    return QByteArray::fromStdString(read_from_file(chatName));
 }
 
 

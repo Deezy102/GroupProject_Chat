@@ -43,7 +43,6 @@ void tcpServer::slotNewConnection()
         mp[id]->write("u connected to the server");
         connect(mp[id], &QTcpSocket::readyRead, this, &tcpServer::slotServerRead);
         connect(mp[id], &QTcpSocket::disconnected, this, &tcpServer::slotDisconect);
-
     }
 }
 

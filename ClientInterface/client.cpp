@@ -10,11 +10,6 @@ Client::Client(QObject *parent) : QObject(parent)
     client_sock->connectToHost(ipAddress, 12345);
     connect(client_sock,SIGNAL(connected()),SLOT(slot_connected()));
     connect(client_sock,SIGNAL(readyRead()),SLOT(slot_readyRead()));
-//    connect(client_sock,SIGNAL(serverSucReg()),SLOT(parsing()));
-//    connect(client_sock,SIGNAL(serverFailReg()),SLOT(parsing()));
-//    connect(client_sock,SIGNAL(serverFailAuth()),SLOT(parsing()));
-//    connect(client_sock,SIGNAL(serverSucAuth()),SLOT(parsing()));
-
 }
 
 void Client::slot_connected()
@@ -81,5 +76,6 @@ void Client::reconnect()
 
 void Client::receiveMessage(QString msg)
 {
-    client_sock->write(server_query(client_login, "pudge_pidzhak", msg, "msg"));
+    if (!msg.isEmpty())
+        client_sock->write(server_query(client_login, "pudge_pidzhak", msg, "msg"));
 }

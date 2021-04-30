@@ -5,10 +5,8 @@ import QtQuick.Layouts 1.12
 
 Page {
     id: root
-    signal backButtonClicked();
-    property string inConversationWith : ""
-    property string userLogin : "Pudge_bez_moma"
-
+    signal backButtonClicked(); 
+    property string inConversationWith : ""  
     background: Rectangle {
         anchors.fill: parent
         anchors.rightMargin: 0

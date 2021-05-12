@@ -20,7 +20,7 @@ using std::fstream;
 using std::pair;
 using std::string;
 
-map<string, string> read_from_file();
+string read_from_file(string chatName);
 bool write_to_file(string login, string chatName, string msg);
 
 
@@ -31,5 +31,7 @@ QByteArray parsing(string msg);
 QByteArray authorization(string logpass);
 QByteArray registration(string logpass);
 QByteArray message(string msgData);
+
+void discon(int socket_id);
 
 #endif // DATABASE_H

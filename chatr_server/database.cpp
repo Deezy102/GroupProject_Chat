@@ -138,8 +138,13 @@ QByteArray registration(string logpass)
 
 QByteArray authorization(string logpass)
 {
+    qDebug() << QString::fromStdString(logpass);
+
     QString login = QString::fromStdString(logpass.substr(0,logpass.find("&")));
-    QString password = QString::fromStdString(logpass.substr(logpass.rfind("&") + 1, logpass.length()));
+    QString password = QString::fromStdString(logpass.substr(logpass.find("&") + 1, logpass.rfind("&") - logpass.find("&") - 1));
+    QString socket = QString::fromStdString(logpass.substr(logpass.rfind("&") + 1, logpass.length()));
+
+    qDebug() << "logpass" << login << " " << password << " " << socket;
 
     QSqlDatabase db = init_db();
 
@@ -151,37 +156,44 @@ QByteArray authorization(string logpass)
 
     int flag_qr = qr.size();
 
-    db.close();
+
 
     if (flag_qr == 1)
+    {
+        qr.prepare("update users set current_socket = :socket where login like :name;");
+        qr.bindValue(":socket", socket);
+        qr.bindValue(":name", login);
+        qr.exec();
+        db.close();
         return "successful login";
+    }
 
+    db.close();
     return "invalid login or password";
 }
 
 QByteArray message(string msgData)
 {
-    qDebug() << QString::fromStdString(msgData);
     string login = msgData.substr(0,msgData.find("&"));
     msgData.erase(0,login.size() + 1);
     string chatName = msgData.substr(0, msgData.find("&"));
     msgData.erase(0,chatName.size() + 1);
     string msg = msgData;
-    qDebug() << QString::fromStdString(login) << QString::fromStdString(chatName) << QString::fromStdString(msg);
+    //qDebug() << QString::fromStdString(login) << QString::fromStdString(chatName) << QString::fromStdString(msg);
     write_to_file(login, chatName, msg);
-    return QByteArray::fromStdString(read_from_file(chatName));
+    string buf = "msg&" +chatName;
+    return QByteArray::fromStdString(buf);
+            //QByteArray::fromStdString(read_from_file(chatName));
 }
 
+void discon(int socket_id)
+{
+    QSqlDatabase db = init_db();
 
+    QSqlQuery qr = QSqlQuery(db);
 
-
-
-
-
-
-
-
-
-
-
-
+    qr.prepare("update users set current_socket = null where current_socket = :socket_id;");
+    qr.bindValue(":socket_id", QString::number(socket_id));
+    qr.exec();
+    db.close();
+}

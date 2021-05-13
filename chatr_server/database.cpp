@@ -207,12 +207,17 @@ int loginToSocket(std::string login)
 
     qr.prepare("select current_socket from users where login like :login");
     qr.bindValue(":login", QString::fromStdString(login));
+
+    int rtrn = -1;
+
     qr.exec();
 
+
     qr.next();
-    int rtrn = qr.value(0).toInt();
 
+    rtrn = qr.value(0).toInt();
+
+    //qDebug() << rtrn;
     db.close();
-
     return rtrn;
 }

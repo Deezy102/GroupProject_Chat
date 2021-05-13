@@ -37,12 +37,13 @@ void tcpServer::slotNewConnection()
     if (server_status)
     {
         user_counts++;
-        qDebug() << QString::fromUtf8("У нас новое соединение! Количество пользователей ") << user_counts;
         QTcpSocket* clientSock=serv->nextPendingConnection();
         int id = clientSock->socketDescriptor();
-        qDebug() << "slotnewcon" << id;
         mp[id] = clientSock;
         mp[id]->write("u connected to the server");
+
+        qDebug() << QString::fromUtf8("У нас новое соединение! Количество пользователей ") << user_counts << id;
+
         connect(mp[id], &QTcpSocket::readyRead, this, &tcpServer::slotServerRead);
         connect(mp[id], &QTcpSocket::disconnected, this, &tcpServer::slotDisconect);
     }
@@ -54,31 +55,31 @@ void tcpServer::slotServerRead()
 
     while(clientsock->bytesAvailable() > 0)
     {
-        QByteArray arr = clientsock->readAll();
-        msg = arr.toStdString();
+        QByteArray recieve = clientsock->readAll();
+        msg = recieve.toStdString();
 
         string buf = msg.substr(0,msg.find("&"));
         msg.erase(0,buf.size() + 1);
 
-        QByteArray receive;
+        //QByteArray receive;
 
         if (buf == "auth")
         {
             //qDebug() << "auth" << clientsock->socketDescriptor();
-            receive = authorization(msg + "&" + std::to_string(clientsock->socketDescriptor()));
+            recieve = authorization(msg + "&" + std::to_string(clientsock->socketDescriptor()));
         }
         if (buf == "reg")
-            receive = registration(msg);
+            recieve = registration(msg);
         if (buf == "msg")
-            receive = message(msg);
+            recieve = message(msg);
 
-        if (receive.contains("msg&"))
+        if (recieve.contains("msg&"))
         {
             //qDebug() << "mes&";
-            slotServerWriteMessage(receive.toStdString());
+            slotServerWriteMessage(recieve.toStdString());
         }
         else
-            clientsock->write(receive);
+            clientsock->write(recieve);
     }
 }
 
@@ -90,7 +91,7 @@ void tcpServer::slotServerWriteMessage(string chatName)
 
     string chatNameCopy = chatName;
 
-    //qDebug() << "chatName: " << QString::fromStdString(chatName);
+    qDebug() << "chatName: " << QString::fromStdString(chatName);
 
     while (!chatName.empty())
     {
@@ -105,9 +106,12 @@ void tcpServer::slotServerWriteMessage(string chatName)
             buf = chatName;
             chatName.erase(0, chatName.length());
         }
-
-        mp[loginToSocket(buf)]->write(QByteArray::fromStdString(read_from_file(chatNameCopy)));
         //qDebug() << "serverwrite: " << QString::fromStdString(buf);
+
+        int id = loginToSocket(buf);
+        if (id != 0)
+            mp[id]->write(QByteArray::fromStdString(read_from_file(chatNameCopy)));
+
     }
 
     //clientsock->write(QByteArray::fromStdString(read_from_file(chatName)));

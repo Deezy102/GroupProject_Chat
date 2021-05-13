@@ -15,18 +15,22 @@ tcpServer::tcpServer(QObject *parent) : QObject(parent)
     }
     else
         qDebug() << "server not started";
+
+    oldSocketsClear();
 }
 
 tcpServer::~tcpServer()
 {
-    qDebug() << "destruct";
+//    qDebug() << "destruct";
     if (server_status)
     {
         foreach(int i, mp.keys())
         {
             mp[i]->close();
             mp.remove(i);
+            BDSocketClear(i);
         }
+
         serv->close();
         server_status = false;
     }
@@ -58,21 +62,24 @@ void tcpServer::slotServerRead()
         QByteArray recieve = clientsock->readAll();
         msg = recieve.toStdString();
 
-        string buf = msg.substr(0,msg.find("&"));
-        msg.erase(0,buf.size() + 1);
+        string keyWord = msg.substr(0,msg.find("&"));
+        msg.erase(0,keyWord.size() + 1);
 
         //QByteArray receive;
 
-        if (buf == "auth")
+        if (keyWord == "auth")
         {
             //qDebug() << "auth" << clientsock->socketDescriptor();
             recieve = authorization(msg + "&" + std::to_string(clientsock->socketDescriptor()));
         }
-        if (buf == "reg")
+        if (keyWord== "reg")
+        {
             recieve = registration(msg);
-        if (buf == "msg")
+        }
+        if (keyWord == "msg")
+        {
             recieve = message(msg);
-
+        }
         if (recieve.contains("msg&"))
         {
             //qDebug() << "mes&";
@@ -110,7 +117,7 @@ void tcpServer::slotServerWriteMessage(string chatName)
 
         int id = loginToSocket(buf);
         if (id != 0)
-            mp[id]->write(QByteArray::fromStdString(read_from_file(chatNameCopy)));
+            mp[id]->write(QByteArray::fromStdString(read_from_file(chatNameCopy, 1)));
 
     }
 
@@ -127,7 +134,7 @@ void tcpServer::slotDisconect()
         if (mp[i] == clientsock)
             {
             mp.remove(i);
-            discon(i);
+            BDSocketClear(i);
             qDebug() << "client disconected: " << i;
             }
     }

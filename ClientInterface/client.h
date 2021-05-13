@@ -31,7 +31,6 @@ public slots:
 private slots:
     void slot_connected();
     void slot_readyRead();
-    //void slot_send_to_server(QString message);
     void slot_disconnected();
 
 

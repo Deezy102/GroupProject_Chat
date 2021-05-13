@@ -33,5 +33,7 @@ QByteArray registration(string logpass);
 QByteArray message(string msgData);
 
 void discon(int socket_id);
+int loginToSocket(string login);
+
 
 #endif // DATABASE_H

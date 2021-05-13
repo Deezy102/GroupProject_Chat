@@ -138,13 +138,13 @@ QByteArray registration(string logpass)
 
 QByteArray authorization(string logpass)
 {
-    qDebug() << QString::fromStdString(logpass);
+    //qDebug() << QString::fromStdString(logpass);
 
     QString login = QString::fromStdString(logpass.substr(0,logpass.find("&")));
     QString password = QString::fromStdString(logpass.substr(logpass.find("&") + 1, logpass.rfind("&") - logpass.find("&") - 1));
     QString socket = QString::fromStdString(logpass.substr(logpass.rfind("&") + 1, logpass.length()));
 
-    qDebug() << "logpass" << login << " " << password << " " << socket;
+    //qDebug() << "logpass" << login << " " << password << " " << socket;
 
     QSqlDatabase db = init_db();
 
@@ -197,4 +197,22 @@ void discon(int socket_id)
     qr.exec();
 
     db.close();
+}
+
+int loginToSocket(std::string login)
+{
+    QSqlDatabase db = init_db();
+
+    QSqlQuery qr = QSqlQuery(db);
+
+    qr.prepare("select current_socket from users where login like :login");
+    qr.bindValue(":login", QString::fromStdString(login));
+    qr.exec();
+
+    qr.next();
+    int rtrn = qr.value(0).toInt();
+
+    db.close();
+
+    return rtrn;
 }

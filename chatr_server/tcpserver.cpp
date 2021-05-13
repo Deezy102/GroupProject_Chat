@@ -45,8 +45,6 @@ void tcpServer::slotNewConnection()
         mp[id]->write("u connected to the server");
         connect(mp[id], &QTcpSocket::readyRead, this, &tcpServer::slotServerRead);
         connect(mp[id], &QTcpSocket::disconnected, this, &tcpServer::slotDisconect);
-        //connect(mp[id], &QTcpSocket::disconnected, this, &tcpServer::deleteLater);
-       // connect(mp[id],SIGNAL(disconnected()),mp[id] , SLOT(deleteLater()));
     }
 }
 
@@ -66,7 +64,7 @@ void tcpServer::slotServerRead()
 
         if (buf == "auth")
         {
-            qDebug() << "auth" << clientsock->socketDescriptor();
+            //qDebug() << "auth" << clientsock->socketDescriptor();
             receive = authorization(msg + "&" + std::to_string(clientsock->socketDescriptor()));
         }
         if (buf == "reg")
@@ -74,9 +72,9 @@ void tcpServer::slotServerRead()
         if (buf == "msg")
             receive = message(msg);
 
-
         if (receive.contains("msg&"))
         {
+            //qDebug() << "mes&";
             slotServerWriteMessage(receive.toStdString());
         }
         else
@@ -84,20 +82,41 @@ void tcpServer::slotServerRead()
     }
 }
 
-void tcpServer::slotServerWriteMessage(string message)
+void tcpServer::slotServerWriteMessage(string chatName)
 {
-    QTcpSocket *clientsock = (QTcpSocket*)sender();
-    message.erase(0,message.find("&") + 1);
+    //QTcpSocket *clientsock = (QTcpSocket*)sender();
 
-    clientsock->write(QByteArray::fromStdString(read_from_file(message)));
+    chatName.erase(0,chatName.find("&") + 1);
+
+    string chatNameCopy = chatName;
+
+    //qDebug() << "chatName: " << QString::fromStdString(chatName);
+
+    while (!chatName.empty())
+    {
+        string buf = "";
+        if (chatName.find("_") != string::npos)
+        {
+            buf = chatName.substr(0, chatName.find("_"));
+            chatName.erase(0, chatName.find("_") + 1);
+        }
+        else
+        {
+            buf = chatName;
+            chatName.erase(0, chatName.length());
+        }
+
+        mp[loginToSocket(buf)]->write(QByteArray::fromStdString(read_from_file(chatNameCopy)));
+        //qDebug() << "serverwrite: " << QString::fromStdString(buf);
+    }
+
+    //clientsock->write(QByteArray::fromStdString(read_from_file(chatName)));
 
 }
 
 void tcpServer::slotDisconect()
 {
     QTcpSocket *clientsock = (QTcpSocket*)sender();
-
-    //int id = -1;
 
     foreach(int i, mp.keys())
     {

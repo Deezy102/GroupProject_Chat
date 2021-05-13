@@ -120,6 +120,7 @@ Page {
                 Button {
                     width: menu.width
                     height: 40
+                    background: Rectangle {color: "#333333"}
                     onClicked: {
                         menu.close()
                         chatCreationForm.open()

@@ -14,9 +14,17 @@ Client::Client(QObject *parent) : QObject(parent)
 
 Client::~Client()
 {
-    qDebug() << "Destructor";
+<<<<<<< HEAD
+
+
+=======
+    qDebug() << "destructor";
+    client_sock->disconnectFromHost();
 }
 
+
+
+>>>>>>> e86f7cbeeafa7ee15e69bd9ee8de2c75fbc61174
 void Client::slot_connected()
 {
     qDebug() << "Connected!!!";
@@ -33,7 +41,7 @@ void Client::parsing(QString msg)
         emit serverSucAuth();
     if (msg == "invalid login or password")
     {
-        qDebug() << "fail auth";
+        //qDebug() << "fail auth";
         emit serverFailAuth();
     }
     if (msg == "successful registration")
@@ -54,7 +62,7 @@ void Client::slot_readyRead()
         message += array.toStdString();
     }
     parsing(QString::fromStdString(message));
-    qDebug() << client_login;
+    qDebug() << "server: " << QString::fromStdString(message);
 }
 
 void Client::receiveLogData(QString l_username, QString l_password)
@@ -72,7 +80,6 @@ void Client::receiveRegData(QString l_username, QString l_password, QString l_ve
    else
    emit clientFailVerifpass();
 }
-
 
 void Client::reconnect()
 {

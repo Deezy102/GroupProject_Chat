@@ -37,28 +37,3 @@ int loginToSocket(string login);
 
 
 #endif // DATABASE_H
-
-
-
-
-
-
-/*
-??
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*/

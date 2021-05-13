@@ -195,5 +195,6 @@ void discon(int socket_id)
     qr.prepare("update users set current_socket = null where current_socket = :socket_id;");
     qr.bindValue(":socket_id", QString::number(socket_id));
     qr.exec();
+
     db.close();
 }

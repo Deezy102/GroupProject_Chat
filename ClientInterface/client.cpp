@@ -12,6 +12,14 @@ Client::Client(QObject *parent) : QObject(parent)
     connect(client_sock,SIGNAL(readyRead()),SLOT(slot_readyRead()));
 }
 
+Client::~Client()
+{
+    qDebug() << "destructor";
+    client_sock->disconnectFromHost();
+}
+
+
+
 void Client::slot_connected()
 {
     qDebug() << "Connected!!!";

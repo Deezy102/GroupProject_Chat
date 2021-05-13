@@ -19,6 +19,7 @@ tcpServer::tcpServer(QObject *parent) : QObject(parent)
 
 tcpServer::~tcpServer()
 {
+    qDebug() << "destruct";
     if (server_status)
     {
         foreach(int i, mp.keys())
@@ -43,7 +44,9 @@ void tcpServer::slotNewConnection()
         mp[id] = clientSock;
         mp[id]->write("u connected to the server");
         connect(mp[id], &QTcpSocket::readyRead, this, &tcpServer::slotServerRead);
-        connect(mp[id], &QTcpSocket::disconnected, this,  &tcpServer::slotDisconect);
+        connect(mp[id], &QTcpSocket::disconnected, this, &tcpServer::slotDisconect);
+        //connect(mp[id], &QTcpSocket::disconnected, this, &tcpServer::deleteLater);
+       // connect(mp[id],SIGNAL(disconnected()),mp[id] , SLOT(deleteLater()));
     }
 }
 
@@ -94,10 +97,18 @@ void tcpServer::slotDisconect()
 {
     QTcpSocket *clientsock = (QTcpSocket*)sender();
 
-    int id = (int)clientsock->socketDescriptor();
+    //int id = -1;
 
-    mp.remove(id);
+    foreach(int i, mp.keys())
+    {
+        if (mp[i] == clientsock)
+            {
+            mp.remove(i);
+            discon(i);
+            qDebug() << "client disconected: " << i;
+            }
+    }
 
     user_counts--;
-    qDebug() << "client disconected";
+
 }

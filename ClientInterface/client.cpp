@@ -14,17 +14,11 @@ Client::Client(QObject *parent) : QObject(parent)
 
 Client::~Client()
 {
-<<<<<<< HEAD
 
-
-=======
     qDebug() << "destructor";
     client_sock->disconnectFromHost();
 }
 
-
-
->>>>>>> e86f7cbeeafa7ee15e69bd9ee8de2c75fbc61174
 void Client::slot_connected()
 {
     qDebug() << "Connected!!!";

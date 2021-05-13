@@ -12,10 +12,8 @@ class Client : public QObject
     Q_OBJECT
 public:
     explicit Client(QObject *parent = nullptr);
-<<<<<<< HEAD
 
-=======
->>>>>>> e86f7cbeeafa7ee15e69bd9ee8de2c75fbc61174
+    ~Client();
 signals:
     void serverSucReg(); // сигнал удачной регистарции
     void serverFailReg(); // сигнал провальной регистрации

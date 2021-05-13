@@ -35,6 +35,4 @@ private:
     const QString ipAddress = "127.0.0.1";
 };
 
-
-
 #endif // TCPSERVER_H

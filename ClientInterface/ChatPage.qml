@@ -117,6 +117,15 @@ Page {
             model: ["Create Chat", "Contacts", "Etc"]
             delegate: ItemDelegate {
                 width: menu.width
+                Button {
+                    width: menu.width
+                    height: 40
+                    onClicked: {
+                        menu.close()
+                        chatCreationForm.open()
+                    }
+                }
+
                 Text {
                     text: modelData
                     color: "#ffffff"
@@ -131,6 +140,92 @@ Page {
 
             }
         }
+    }
+
+    Popup {
+        id: chatCreationForm
+        height: 200
+        width: 320
+        anchors.centerIn: parent
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+
+        contentItem: Rectangle {
+            color: "#333333"
+            anchors.fill: parent
+            TextField {
+                id: chatname
+                width: 320
+                height: 40
+                anchors.top: parent.top
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                placeholderText: qsTr("Write Chat Name...")
+                placeholderTextColor: "#ccc7c5c5"
+
+                color: "#ffffff"
+                font.pixelSize: 12
+
+                background: Rectangle {
+                    anchors.fill: parent
+                    visible: true
+                    color: "#1f1f1f"
+                    border.color: "#ff0040"
+
+                }
+            }
+            TextField {
+                id: contact
+                width: 320
+                height: 40
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                placeholderText: qsTr("Write User Name...")
+                placeholderTextColor: "#ccc7c5c5"
+
+                color: "#ffffff"
+                font.pixelSize: 12
+
+                background: Rectangle {
+                    anchors.fill: parent
+                    visible: true
+                    color: "#1f1f1f"
+                    border.color: "#ff0040"
+
+                }
+            }
+
+
+            Button {
+                id: createChatButton
+
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
+
+                width: 80
+                height: 40
+                background: Rectangle {
+                    anchors.fill: parent
+                    visible: true
+                    color: "#1f1f1f"
+                    border.color: "#ff0040"
+                }
+
+                Text {
+                    anchors.fill: parent
+                    text: "Create"
+                    color: "#ffffff"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.bold: false
+                    elide: Text.ElideRight
+                }
+
+            }
+        }
+
     }
 
     ScrollView {
@@ -148,7 +243,7 @@ Page {
             anchors.top: parrent.top
             anchors.bottom: parent.bottom
             height: parent.height - toolBar.height
-            model: ["Chat 1", "Chat 2", "Chat 3", "Chat 2", "Chat 3", "Chat 2", "Chat 3", "Chat 2", "Chat 3", "Chat 2", "Chat 3", "Chat 2", "Chat 3", "Chat 2", "Chat 3"] //скорее всего надо подгружать модель с сервера при каждом логине или добавлении чата
+            model: [] //скорее всего надо подгружать модель с сервера при каждом логине или добавлении чата
 
             delegate: ItemDelegate {
                 Text {
@@ -181,7 +276,7 @@ Page {
             anchors.bottom: msgField.top
             anchors.right: root.right
             width: root.width * 0.7
-            model: ["Message 1", "Message 2", "Message 3", "Message 3", "Message 3", "Message 3", "Message 3", "Message 3", "Message 3", "Message 3", "Message 3", "Message 3", "Message 3"] //надо подгружать с сервера
+            model: [] //надо подгружать с сервера
             delegate: ItemDelegate {
                 Text {
                     text: modelData

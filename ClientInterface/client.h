@@ -12,6 +12,7 @@ class Client : public QObject
     Q_OBJECT
 public:
     explicit Client(QObject *parent = nullptr);
+    ~Client();
 
 signals:
     void serverSucReg(); // сигнал удачной регистарции
@@ -36,7 +37,7 @@ private slots:
 
 private:
     QTcpSocket *client_sock;
-    const QString ipAddress = "127.0.0.1";
+    const QString ipAddress = "26.246.131.81";
 };
 
 

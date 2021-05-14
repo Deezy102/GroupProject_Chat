@@ -3,7 +3,7 @@
 bool flag = true;
 const string path = "D:\\chat\\chat_git\\GroupProject_Chat\\chatStorage\\";
 
-string read_from_file(string chatName)
+string read_from_file(string chatName, int counterNum)
 {
     string str;
     ifstream file(path + chatName + ".txt", std::ios::in);
@@ -14,7 +14,7 @@ string read_from_file(string chatName)
     else
     {
         int counter = 0;
-        while (!file.eof() && counter < 10)
+        while (!file.eof() && counter < counterNum)
         {
             string buf;
             std::getline(file, buf);
@@ -72,19 +72,19 @@ bool write_to_file(string login, string chatName, string msg)
     return true;
 }
 
-QByteArray parsing(string msg)
-{
-    string buf = msg.substr(0,msg.find("&"));
-    msg.erase(0,buf.size() + 1);
+//QByteArray parsing(string msg)
+//{
+//    string buf = msg.substr(0,msg.find("&"));
+//    msg.erase(0,buf.size() + 1);
 
-    if (buf == "auth")
-        return authorization(msg);
-    if (buf == "reg")
-        return registration(msg);
-    if (buf == "msg")
-        return message(msg);
-    return "error";
-}
+//    if (buf == "auth")
+//        return authorization(msg);
+//    if (buf == "reg")
+//        return registration(msg);
+//    if (buf == "msg")
+//        return message(msg);
+//    return "error";
+//}
 
 QSqlDatabase init_db()
 {
@@ -156,8 +156,6 @@ QByteArray authorization(string logpass)
 
     int flag_qr = qr.size();
 
-
-
     if (flag_qr == 1)
     {
         qr.prepare("update users set current_socket = :socket where login like :name;");
@@ -186,7 +184,7 @@ QByteArray message(string msgData)
             //QByteArray::fromStdString(read_from_file(chatName));
 }
 
-void discon(int socket_id)
+void BDSocketClear(int socket_id)
 {
     QSqlDatabase db = init_db();
 
@@ -207,12 +205,28 @@ int loginToSocket(std::string login)
 
     qr.prepare("select current_socket from users where login like :login");
     qr.bindValue(":login", QString::fromStdString(login));
+
+    int rtrn = -1;
+
     qr.exec();
 
     qr.next();
-    int rtrn = qr.value(0).toInt();
+
+    rtrn = qr.value(0).toInt();
+
+    //qDebug() << rtrn;
+    db.close();
+    return rtrn;
+}
+
+void oldSocketsClear()
+{
+    QSqlDatabase db = init_db();
+
+    QSqlQuery qr = QSqlQuery(db);
+
+    qr.prepare("update users set current_socket = null where current_socket > -1;");
+    qr.exec();
 
     db.close();
-
-    return rtrn;
 }

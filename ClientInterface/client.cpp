@@ -14,8 +14,7 @@ Client::Client(QObject *parent) : QObject(parent)
 
 Client::~Client()
 {
-
-    qDebug() << "destructor";
+    //qDebug() << "destructor";
     client_sock->disconnectFromHost();
 }
 
@@ -34,10 +33,7 @@ void Client::parsing(QString msg)
     if (msg == "successful login")
         emit serverSucAuth();
     if (msg == "invalid login or password")
-    {
-        //qDebug() << "fail auth";
         emit serverFailAuth();
-    }
     if (msg == "successful registration")
         emit serverSucReg();
     if (msg == "choose antoher login")

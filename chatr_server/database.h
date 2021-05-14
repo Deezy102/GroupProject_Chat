@@ -20,7 +20,7 @@ using std::fstream;
 using std::pair;
 using std::string;
 
-string read_from_file(string chatName);
+string read_from_file(string chatName, int counterNum);
 bool write_to_file(string login, string chatName, string msg);
 
 
@@ -32,7 +32,8 @@ QByteArray authorization(string logpass);
 QByteArray registration(string logpass);
 QByteArray message(string msgData);
 
-void discon(int socket_id);
+void BDSocketClear(int socket_id);
+void oldSocketsClear();
 int loginToSocket(string login);
 
 

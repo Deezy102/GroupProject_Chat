@@ -32,13 +32,12 @@ public slots:
 private slots:
     void slot_connected();
     void slot_readyRead();
-    //void slot_send_to_server(QString message);
     void slot_disconnected();
 
 
 private:
     QTcpSocket *client_sock;
-    const QString ipAddress = "26.246.131.81";
+    const QString ipAddress = "127.0.0.1";
 };
 
 

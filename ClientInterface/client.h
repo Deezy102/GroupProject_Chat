@@ -27,6 +27,7 @@ public slots:
     void parsing(QString msg);
     void reconnect();
     void receiveMessage(QString msg);
+    void receiveChatCreation(QString chatname, QString contact);
 
 private slots:
     void slot_connected();

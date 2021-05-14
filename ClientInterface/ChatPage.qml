@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.12
 
 Page {
     id: root
-    signal backButtonClicked(); 
+    signal backButtonClicked();
     property string inConversationWith : ""  
     background: Rectangle {
         anchors.fill: parent
@@ -224,6 +224,7 @@ Page {
                     elide: Text.ElideRight
                 }
 
+                onClicked: client.receiveChatCreation(chatname.text, contact.text)
             }
         }
 

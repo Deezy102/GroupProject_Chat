@@ -85,3 +85,9 @@ void Client::receiveMessage(QString msg)
     if (!msg.isEmpty())
         client_sock->write(server_query(client_login, "pudge_pidzhak", msg, "msg"));
 }
+
+void Client::receiveChatCreation(QString chatname, QString contact)
+{
+    //client_sock->write()
+    qDebug() << chatname << contact;
+}

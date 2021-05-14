@@ -41,9 +41,7 @@ Page {
                     color: "#ffffff"
                     font.pixelSize: 16
                 }
-                background: Rectangle {
-                    color: "#333333"
-                }
+                background: Rectangle {color: "#333333"}
                 onClicked: {
                     menu.open()
                     console.log("menu clicked")
@@ -52,6 +50,7 @@ Page {
 
 
             Label {
+
                 text: root.inConversationWith
                 color: "#ffffff"
                 elide: Label.ElideRight
@@ -59,8 +58,20 @@ Page {
                 verticalAlignment: Qt.AlignVCenter
                 Layout.fillWidth: true
                 font.pixelSize: 16
-            }
+                ToolButton {
+                    id: chatInfoButton
+                    implicitHeight: 30
+                    implicitWidth: parent.width
+                    anchors.fill: parent
+                    background: Rectangle {color: "transparent"}
+                    enabled: false
+                    onClicked:
+                        console.log("chat info clicked")
 
+                }
+
+
+            }
             ToolButton {
                 id: backButton
                 anchors.right: toolBar.right
@@ -245,16 +256,18 @@ Page {
             anchors.top: parrent.top
             anchors.bottom: parent.bottom
             height: parent.height - toolBar.height
-            model: [] //скорее всего надо подгружать модель с сервера при каждом логине или добавлении чата
+            model: ["Chat 1"] //скорее всего надо подгружать модель с сервера при каждом логине или добавлении чата
 
             delegate: ItemDelegate {
                 Text {
                     text: modelData
                     color: "#ffffff"
+                    anchors.centerIn: parent
                 }
                 width: chatListView.width
                 onClicked: {
                     console.log("clicked:", modelData)
+                    chatInfoButton.enabled = true
                     root.inConversationWith = modelData
 
                 }

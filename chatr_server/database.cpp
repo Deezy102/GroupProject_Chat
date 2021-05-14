@@ -230,3 +230,39 @@ void oldSocketsClear()
 
     db.close();
 }
+
+QByteArray chatCreation(std::string chatData)
+{
+    QString chatName = QString::fromStdString(chatData.substr(0, chatData.find("&")));
+    chatData.erase(0,chatName.size() + 1);
+    QString contact1 = QString::fromStdString(chatData.substr(0, chatData.find("&")));
+    chatData.erase(0, chatData.find("&") + 1);
+    QString contact2 = QString::fromStdString(chatData);
+
+    qDebug() << "chatcreation" << chatName << contact1 << contact2;
+
+    QSqlDatabase db = init_db();
+
+    QSqlQuery qr = QSqlQuery(db);
+    qr.prepare("select * from chatlist where chatname like :chatName");
+    qr.bindValue(":chatName", chatName);
+    qr.exec();
+
+    if (qr.size()==0)
+    {
+        qr.prepare(QString("insert into chatlist (chatname, userlist) values ('%1', '{%2, %3}')").arg(chatName).arg(contact1).arg(contact2));
+        qr.exec();
+        //qDebug() << "error: " << qr.lastError().text(); //ВЫВОД ОШИБКИ ЗАПРОСА БД
+        db.close();
+
+        return "successful chat creation";
+    }
+
+    db.close();
+
+    return "bad name of chat";
+
+
+    qDebug() << "chatcrt: " << QString::fromStdString(chatData);
+    return "chat created";
+}

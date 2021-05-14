@@ -12,6 +12,7 @@
 #include <iostream>
 #include <QDateTime>
 #include <cstdio>
+#include <vector>
 
 using std::map;
 using std::ifstream;
@@ -19,6 +20,7 @@ using std::ofstream;
 using std::fstream;
 using std::pair;
 using std::string;
+using std::vector;
 
 string read_from_file(string chatName, int counterNum);
 bool write_to_file(string login, string chatName, string msg);
@@ -31,6 +33,7 @@ QByteArray parsing(string msg);
 QByteArray authorization(string logpass);
 QByteArray registration(string logpass);
 QByteArray message(string msgData);
+QByteArray chatCreation(string chatData);
 
 void BDSocketClear(int socket_id);
 void oldSocketsClear();

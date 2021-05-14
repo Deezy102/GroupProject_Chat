@@ -80,6 +80,10 @@ void tcpServer::slotServerRead()
         {
             recieve = message(msg);
         }
+        if (keyWord == "chatcrt")
+        {
+            recieve = chatCreation(msg);
+        }
         if (recieve.contains("msg&"))
         {
             //qDebug() << "mes&";

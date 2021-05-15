@@ -7,6 +7,7 @@ Page {
     id: root
     signal backButtonClicked();
     property string inConversationWith : ""  
+
     background: Rectangle {
         anchors.fill: parent
         anchors.rightMargin: 0
@@ -65,8 +66,10 @@ Page {
                     anchors.fill: parent
                     background: Rectangle {color: "transparent"}
                     enabled: false
-                    onClicked:
+                    onClicked: {
                         console.log("chat info clicked")
+                        chatInfoPopup.open()
+                    }
 
                 }
 
@@ -101,7 +104,6 @@ Page {
         height: parent.height
         width: parent.width * 0.3
         background: Rectangle {color: "#333333"}
-        clip: true
 
         Rectangle {
             id: userLoginRect
@@ -153,7 +155,6 @@ Page {
             }
         }
     }
-
     Popup {
         id: chatCreationForm
         height: 200
@@ -239,6 +240,127 @@ Page {
             }
         }
 
+    }
+    Popup {
+        id: chatInfoPopup
+        anchors.centerIn: parent
+        height: (root.height - toolBar.height) * 0.9
+        width: 300
+        modal: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        contentItem: Rectangle {
+            color: "#333333"
+            anchors.fill: parent
+
+            Rectangle {
+                id: chatnameRect
+                color: "#1f1f1f"
+                border.color: "#ff0040"
+                anchors.top: parent.top
+                width: parent.width
+                height: 80
+
+                Text {
+                    text: inConversationWith
+                    anchors.fill: parent
+                    color: "#ff0040"
+                    font.pixelSize: 16
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                }
+            }
+
+            TextField {
+                id: newUserName
+                width: parent.width
+                height: 40
+                anchors.top: chatnameRect.bottom
+                anchors.topMargin: 20
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                placeholderText: qsTr("Write New User...")
+                placeholderTextColor: "#ccc7c5c5"
+
+                color: "#ffffff"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.bold: false
+
+                background: Rectangle {
+                    anchors.fill: parent
+                    visible: true
+                    color: "#1f1f1f"
+                    border.color: "#ff0040"
+
+                }
+            }
+
+            Button {
+                id: adduserButton
+                height: 40
+                width: 80
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
+                background: Rectangle {
+                    anchors.fill: parent
+                    visible: true
+                    color: "#1f1f1f"
+                    border.color: "#ff0040"
+                }
+
+                Text {
+                    anchors.fill: parent
+                    text: "Add user"
+                    color: "#ffffff"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.bold: false
+                    elide: Text.ElideRight
+                }
+                onClicked: {
+                    client.receiveAddUserToChat(inConversationWith, newUserName.text)
+                }
+
+            }
+
+
+//            ScrollView {
+//                id: chatUsersScroll
+//                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+//                ScrollBar.vertical.interactive: true
+//                anchors.top: chatnameRect.bottom
+//                anchors.left: chatInfoPopup.left
+//                anchors.right: chatInfoPopup.right
+//                width: parent.width
+//                height: chatInfoPopup.height - chatnameRect.height
+//                contentHeight: hatInfoPopup.height - chatnameRect.height
+//                ListView {
+//                    id: chatUsersList
+//                    anchors.top: parent.top
+//                    anchors.bottom: parent.bottom
+//                    anchors.horizontalCenter: chatInfoPopup.contentItem.horizontalCenter
+//                    width: parent.width
+//                    model: ["User 1", "User 2", "User 2", "User 2", "User 2", "User 2", "User 2", "User 2", "User 2", "User 2", "User 2", "User 2"] //надо подгружать с сервера
+//                    delegate: ItemDelegate {
+//                        width: chatUsersList.width
+//                        height: 40
+//                        background: Rectangle {color: "#333333"}
+//                        down: true
+//                        Text {
+//                            text: modelData
+//                            color: "#ffffff"
+//                            anchors.fill: parent
+//                            font.pixelSize: 14
+//                            verticalAlignment: Text.AlignVCenter
+//                            horizontalAlignment: Text.AlignHCenter
+//                        }
+
+//                    }
+//                }
+//            }
+
+        }
     }
 
     ScrollView {

@@ -88,3 +88,8 @@ void Client::receiveChatCreation(QString chatname, QString contact)
     client_sock->write(server_query(chatname, contact, "chatcrt"));
     qDebug() << chatname << contact;
 }
+
+void Client::receiveAddUserToChat(QString chatname, QString newuser)
+{
+    qDebug() << chatname << newuser;
+}

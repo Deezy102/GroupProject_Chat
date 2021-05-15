@@ -10,6 +10,8 @@ ApplicationWindow {
     visible: true
     width: 640
     height: 480
+    minimumWidth: 640
+    minimumHeight: 480
     color: "#242424"
     title: "SSSchat"
 

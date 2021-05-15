@@ -121,9 +121,7 @@ QByteArray registration(string logpass)
 
     if (qr.size()==0)
     {
-        qr.prepare("insert into users (login, password) values (?, ?)");
-        qr.addBindValue(login);
-        qr.addBindValue(password);
+        qr.prepare(QString("insert into users (login, password) values ('%1', '%2')").arg(login,password));
         qr.exec();
 
         db.close();
@@ -138,29 +136,20 @@ QByteArray registration(string logpass)
 
 QByteArray authorization(string logpass)
 {
-    //qDebug() << QString::fromStdString(logpass);
-
     QString login = QString::fromStdString(logpass.substr(0,logpass.find("&")));
     QString password = QString::fromStdString(logpass.substr(logpass.find("&") + 1, logpass.rfind("&") - logpass.find("&") - 1));
     QString socket = QString::fromStdString(logpass.substr(logpass.rfind("&") + 1, logpass.length()));
 
-    //qDebug() << "logpass" << login << " " << password << " " << socket;
-
     QSqlDatabase db = init_db();
 
     QSqlQuery qr = QSqlQuery(db);
-    qr.prepare("select * from users where login like :name and password like :password");
-    qr.bindValue(":name", login);
-    qr.bindValue(":password", password);
+    qr.prepare(QString("select count(*) from users where login like '%1' and password like '%2'").arg(login,password));
     qr.exec();
+    qr.next();
 
-    int flag_qr = qr.size();
-
-    if (flag_qr == 1)
+    if (qr.value(0).toInt() == 1)
     {
-        qr.prepare("update users set current_socket = :socket where login like :name;");
-        qr.bindValue(":socket", socket);
-        qr.bindValue(":name", login);
+        qr.prepare(QString("update users set current_socket = '%1' where login like '%2';").arg(socket,login));
         qr.exec();
         db.close();
         return "successful login";
@@ -177,11 +166,10 @@ QByteArray message(string msgData)
     string chatName = msgData.substr(0, msgData.find("&"));
     msgData.erase(0,chatName.size() + 1);
     string msg = msgData;
-    //qDebug() << QString::fromStdString(login) << QString::fromStdString(chatName) << QString::fromStdString(msg);
+
     write_to_file(login, chatName, msg);
-    string buf = "msg&" +chatName;
-    return QByteArray::fromStdString(buf);
-            //QByteArray::fromStdString(read_from_file(chatName));
+
+    return QByteArray::fromStdString("msg&" +chatName);
 }
 
 void BDSocketClear(int socket_id)
@@ -190,8 +178,7 @@ void BDSocketClear(int socket_id)
 
     QSqlQuery qr = QSqlQuery(db);
 
-    qr.prepare("update users set current_socket = null where current_socket = :socket_id;");
-    qr.bindValue(":socket_id", QString::number(socket_id));
+    qr.prepare(QString("update users set current_socket = null where current_socket = %1;").arg(socket_id));
     qr.exec();
 
     db.close();
@@ -200,21 +187,15 @@ void BDSocketClear(int socket_id)
 int loginToSocket(std::string login)
 {
     QSqlDatabase db = init_db();
-
     QSqlQuery qr = QSqlQuery(db);
 
-    qr.prepare("select current_socket from users where login like :login");
-    qr.bindValue(":login", QString::fromStdString(login));
-
-    int rtrn = -1;
-
+    qr.prepare(QString("select current_socket from users where login like '%1'").arg(QString::fromStdString(login)));
     qr.exec();
-
     qr.next();
 
+    int rtrn = -1;
     rtrn = qr.value(0).toInt();
 
-    //qDebug() << rtrn;
     db.close();
     return rtrn;
 }
@@ -222,7 +203,6 @@ int loginToSocket(std::string login)
 void oldSocketsClear()
 {
     QSqlDatabase db = init_db();
-
     QSqlQuery qr = QSqlQuery(db);
 
     qr.prepare("update users set current_socket = null where current_socket > -1;");
@@ -239,18 +219,16 @@ QByteArray chatCreation(std::string chatData)
     chatData.erase(0, chatData.find("&") + 1);
     QString contact2 = QString::fromStdString(chatData);
 
-    qDebug() << "chatcreation" << chatName << contact1 << contact2;
 
     QSqlDatabase db = init_db();
 
     QSqlQuery qr = QSqlQuery(db);
-    qr.prepare("select * from chatlist where chatname like :chatName");
-    qr.bindValue(":chatName", chatName);
+    qr.prepare(QString("select * from chatlist where chatname like '%1'").arg(chatName));
     qr.exec();
 
     if (qr.size()==0)
     {
-        qr.prepare(QString("insert into chatlist (chatname, userlist) values ('%1', '{%2, %3}')").arg(chatName).arg(contact1).arg(contact2));
+        qr.prepare(QString("insert into chatlist (chatname, userlist) values ('%1', '{%2, %3}')").arg(chatName, contact1, contact2));
         qr.exec();
         //qDebug() << "error: " << qr.lastError().text(); //ВЫВОД ОШИБКИ ЗАПРОСА БД
         db.close();
@@ -261,10 +239,6 @@ QByteArray chatCreation(std::string chatData)
     db.close();
 
     return "bad name of chat";
-
-
-    qDebug() << "chatcrt: " << QString::fromStdString(chatData);
-    return "chat created";
 }
 
 QByteArray chatUserAdd(std::string msgData)
@@ -277,17 +251,16 @@ QByteArray chatUserAdd(std::string msgData)
     QSqlDatabase db = init_db();
 
     QSqlQuery qr = QSqlQuery(db);
-    //qr.prepare(QString("select chatname from chatlist where '%1' = ANY(userlist) and chatname != '%2';").arg(userLogin).arg(chatName));
-    qr.prepare(QString("select count(*) from chatlist where chatname = '%1' and not('%2' = ANY(userlist)) and (select count(*) from users where login like '%2') = 1;").arg(chatName).arg(userLogin));
-
+    QString buf = "select count(*) from chatlist where chatname = '%1' and not('%2' = ANY(userlist)) and (select count(*) from users where login like '%2') = 1;";
+    qr.prepare(buf.arg(chatName, userLogin));
     qr.exec();
     qr.next();
 
     if (qr.value(0).toInt() == 1)
     {
-        qr.prepare(QString("update chatlist set userlist = userlist || '{%1}' where chatname like '%2'").arg(userLogin).arg(chatName));
+        qr.prepare(QString("update chatlist set userlist = userlist || '{%1}' where chatname like '%2'").arg(userLogin, chatName));
         qr.exec();
-        //qDebug() << "error: " << qr.lastError().text(); //ВЫВОД ОШИБКИ ЗАПРОСА БД
+
         db.close();
 
         return "successful user addition";

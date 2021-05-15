@@ -56,13 +56,13 @@ void Client::slot_readyRead()
 void Client::receiveLogData(QString l_username, QString l_password)
 {
     client_login = l_username;
-    client_sock->write(server_query(l_username, l_password, "auth"));
+    client_sock->write(server_query( "auth", l_username, l_password));
 }
 
 void Client::receiveRegData(QString l_username, QString l_password, QString l_verpassword)
 {
    if (correctLogPass(l_username, l_password, l_verpassword))
-       client_sock->write(server_query(l_username, l_password, "reg"));
+       client_sock->write(server_query("reg", l_username, l_password));
    else
        emit clientFailVerifpass();
 }
@@ -75,17 +75,17 @@ void Client::reconnect()
 void Client::receiveMessage(QString msg)
 {
     if (!msg.isEmpty())
-        client_sock->write(server_query(client_login, "pudge_pidzhak", msg, "msg"));
+        client_sock->write(server_query("msg", client_login, "pudge_pidzhak", msg));
 }
 
 void Client::receiveChatCreation(QString chatname, QString contact)
 {
     contact += "&" + client_login;
-    client_sock->write(server_query(chatname, contact, "chatcrt"));
+    client_sock->write(server_query("chatcrt", chatname, contact));
 }
 
 void Client::receiveAddUserToChat(QString chatname, QString newuser)
 {
-    client_sock->write(server_query(chatname, newuser, "chatUserAdd"));
+    client_sock->write(server_query("chatUserAdd", chatname, newuser));
     qDebug() << chatname << newuser;
 }

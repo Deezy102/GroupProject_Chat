@@ -16,27 +16,24 @@ bool clearlogin(QString logpass)
     bool flag = true;
 
     for (int i = 0; i < int(forbidden.size()); i++)
-    {
-
         flag *= !logpass.contains(forbidden[i]);
 
-    }
     qDebug() << flag;
     return flag;
 }
 
 
-QByteArray server_query(QString name, QString password, QString funcSwitch)
+QByteArray server_query(QString funcSwitch, QString first, QString second)
 {
-    QString message = funcSwitch+"&"+name+"&"+password;
+    QString message = funcSwitch+"&"+first+"&"+second;
     QByteArray array;
     array.append(message.toUtf8());
     return array;
 }
 
-QByteArray server_query(QString login, QString chatName, QString msg,  QString funcSwitch)
+QByteArray server_query(QString funcSwitch, QString first, QString second, QString msg)
 {
-    QString message = funcSwitch+"&"+login+"&"+chatName+"&"+msg;
+    QString message = funcSwitch+"&"+first+"&"+second+"&"+msg;
     QByteArray array;
     array.append(message.toUtf8());
     return array;

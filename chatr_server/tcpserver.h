@@ -33,6 +33,14 @@ private:
     std::string msg;
     QMap<int, QTcpSocket*> mp;
     const QString ipAddress = "127.0.0.1";
+<<<<<<< HEAD
+=======
+
+signals:
+    bool check(string logpass);
+
+
+>>>>>>> a17c4a4 (old ver)
 };
 
 #endif // TCPSERVER_H

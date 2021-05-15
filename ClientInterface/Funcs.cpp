@@ -3,15 +3,32 @@
 bool correctLogPass(QString login, QString pass, QString verpass)
 {
     if (pass == verpass)
-        return !(QString(login + pass).contains(" ") || QString(login + pass).contains("&"));
+        return clearlogin(login+pass);
 
     return false;
 }
 
+bool clearlogin(QString logpass)
+{
+    qDebug() << logpass;
+    vector<QString> forbidden = {"&", "_", " "};
+
+    bool flag = true;
+
+    for (int i = 0; i < int(forbidden.size()); i++)
+    {
+
+        flag *= !logpass.contains(forbidden[i]);
+
+    }
+    qDebug() << flag;
+    return flag;
+}
+
+
 QByteArray server_query(QString name, QString password, QString funcSwitch)
 {
     QString message = funcSwitch+"&"+name+"&"+password;
-    //qDebug() << message;
     QByteArray array;
     array.append(message.toUtf8());
     return array;
@@ -24,3 +41,4 @@ QByteArray server_query(QString login, QString chatName, QString msg,  QString f
     array.append(message.toUtf8());
     return array;
 }
+

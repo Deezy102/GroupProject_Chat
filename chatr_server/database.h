@@ -7,6 +7,7 @@
 #include <QSqlRecord>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QList>
 #include <string>
 #include <fstream>
 #include <iostream>

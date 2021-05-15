@@ -266,3 +266,35 @@ QByteArray chatCreation(std::string chatData)
     qDebug() << "chatcrt: " << QString::fromStdString(chatData);
     return "chat created";
 }
+
+QByteArray chatUserAdd(std::string msgData)
+{
+    QString chatName = QString::fromStdString(msgData.substr(0, msgData.find("&")));
+    msgData.erase(0,chatName.size() + 1);
+    QString userLogin = QString::fromStdString(msgData.substr(0, msgData.find("&")));
+    msgData.erase(0,chatName.size() + 1);
+
+    QSqlDatabase db = init_db();
+
+    QSqlQuery qr = QSqlQuery(db);
+    //qr.prepare(QString("select chatname from chatlist where '%1' = ANY(userlist) and chatname != '%2';").arg(userLogin).arg(chatName));
+    qr.prepare(QString("select count(*) from chatlist where chatname = '%1' and not('%2' = ANY(userlist)) and (select count(*) from users where login like '%2') = 1;").arg(chatName).arg(userLogin));
+
+    qr.exec();
+    qr.next();
+
+    if (qr.value(0).toInt() == 1)
+    {
+        qr.prepare(QString("update chatlist set userlist = userlist || '{%1}' where chatname like '%2'").arg(userLogin).arg(chatName));
+        qr.exec();
+        //qDebug() << "error: " << qr.lastError().text(); //ВЫВОД ОШИБКИ ЗАПРОСА БД
+        db.close();
+
+        return "successful user addition";
+    }
+
+    db.close();
+
+    return "fail user addition";
+}
+

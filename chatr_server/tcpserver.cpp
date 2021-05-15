@@ -59,8 +59,8 @@ void tcpServer::slotServerRead()
 
     while(clientsock->bytesAvailable() > 0)
     {
-        QByteArray recieve = clientsock->readAll();
-        msg = recieve.toStdString();
+        QByteArray transfer = clientsock->readAll();
+        msg = transfer.toStdString();
 
         string keyWord = msg.substr(0,msg.find("&"));
         msg.erase(0,keyWord.size() + 1);
@@ -70,27 +70,31 @@ void tcpServer::slotServerRead()
         if (keyWord == "auth")
         {
             //qDebug() << "auth" << clientsock->socketDescriptor();
-            recieve = authorization(msg + "&" + std::to_string(clientsock->socketDescriptor()));
+            transfer = authorization(msg + "&" + std::to_string(clientsock->socketDescriptor()));
         }
         if (keyWord== "reg")
         {
-            recieve = registration(msg);
+            transfer = registration(msg);
         }
         if (keyWord == "msg")
         {
-            recieve = message(msg);
+            transfer = message(msg);
         }
         if (keyWord == "chatcrt")
         {
-            recieve = chatCreation(msg);
+            transfer = chatCreation(msg);
         }
-        if (recieve.contains("msg&"))
+        if (keyWord == "chatUserAdd")
+        {
+            transfer = chatUserAdd(msg);
+        }
+        if (transfer.contains("msg&"))
         {
             //qDebug() << "mes&";
-            slotServerWriteMessage(recieve.toStdString());
+            slotServerWriteMessage(transfer.toStdString());
         }
         else
-            clientsock->write(recieve);
+            clientsock->write(transfer);
     }
 }
 

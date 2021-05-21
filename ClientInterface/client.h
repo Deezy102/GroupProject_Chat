@@ -7,6 +7,7 @@
 #include <string>
 #include <QTcpSocket>
 
+
 class Client : public QObject
 {
     Q_OBJECT
@@ -28,6 +29,7 @@ public slots:
     void reconnect();
     void receiveMessage(QString msg);
     void receiveChatCreation(QString chatname, QString contact);
+    void receiveAddUserToChat(QString chatname, QString newuser);
 
 private slots:
     void slot_connected();
@@ -37,7 +39,7 @@ private slots:
 
 private:
     QTcpSocket *client_sock;
-    const QString ipAddress = "127.000.000.001";
+    const QString ipAddress = "127.0.0.1";
 };
 
 

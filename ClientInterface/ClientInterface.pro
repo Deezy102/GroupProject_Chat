@@ -10,7 +10,7 @@ CONFIG += c++11
 SOURCES += \
         client.cpp \
         funcs.cpp \
-        main.cpp
+        main.cpp \
 
 RESOURCES += qml.qrc
 
@@ -27,7 +27,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     client.h \
-    funcs.h
+    funcs.h \
 
 DISTFILES += \
 

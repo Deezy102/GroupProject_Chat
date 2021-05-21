@@ -285,17 +285,24 @@ Page {
         ScrollBar.vertical.interactive: true
 
 
+
         ListView {
             id: chatView
             anchors.top: toolBar.bottom
             anchors.bottom: msgField.top
             anchors.right: root.right
             width: root.width * 0.7
-            model: [] //надо подгружать с сервера
+
+            model: ListModel {
+                ListElement {
+
+                }
+            }
             delegate: ItemDelegate {
+                width: parent.width
                 Text {
                     text: modelData
-                    width: chatView.width
+                    width: parent.width
                     color: "#ffffff"
                 }
             }

@@ -49,7 +49,7 @@ void tcpServer::slotNewConnection()
         mp[id] = clientSock;
         mp[id]->write("u connected to the server");
 
-        qDebug() << QString::fromUtf8("У нас новое соединение! Количество пользователей ") << user_counts << id;
+        qDebug() << QString::fromUtf8("У нас новое соединение (сокет: %1). Количество пользователей:").arg(id) << user_counts;
 
         connect(mp[id], &QTcpSocket::readyRead, this, &tcpServer::slotServerRead);
         connect(mp[id], &QTcpSocket::disconnected, this, &tcpServer::slotDisconect);
@@ -71,17 +71,27 @@ void tcpServer::slotServerRead()
         if (keyWord == "auth")
             transfer = authorization(msg + "&" + std::to_string(clientsock->socketDescriptor()));
 
-        if (keyWord== "reg")
+        else if (keyWord== "reg")
             transfer = registration(msg);
 
-        if (keyWord == "msg")
+        else if (keyWord == "msg")
             transfer = message(msg);
 
-        if (keyWord == "chatcrt")
+        else if (keyWord == "chatcrt")
             transfer = chatCreation(msg);
 
-        if (keyWord == "chatUserAdd")
+        else if (keyWord == "chatUserAdd")
             transfer = chatUserAdd(msg);
+
+        else if (keyWord == "chatUserDel")
+            transfer = chatUserDel(msg);
+
+        else if  (keyWord == "chatld")
+            slotLoadChatRoom(msg);
+
+        else if (keyWord == "list")
+            slotServerSendChatlist(msg);
+
 
         if (transfer.contains("msg&"))
             slotServerWriteMessage(transfer.toStdString());
@@ -113,7 +123,7 @@ void tcpServer::slotServerWriteMessage(string chatName)
         int id = loginToSocket(buf);
 
         if (id != 0)
-            mp[id]->write(QByteArray::fromStdString(read_from_file(chatNameCopy, 1)));
+            mp[id]->write(QByteArray::fromStdString(read_from_file(chatNameCopy, 0)));
     }
 }
 
@@ -132,4 +142,44 @@ void tcpServer::slotDisconect()
         }
 
     user_counts--;
+}
+void tcpServer::slotServerSendChatlist(string login)
+{
+    //вектор стрингов хранит список чатов, в которых состоит пользователь
+    vector<string> list = getChatlist(login);
+
+    int id = loginToSocket(login); //получаем сокет по логину
+
+    if (id != 0)
+        for (int i = 0; i < list.size(); i++)//посылаем на клиент по одному названию чата
+            mp[id]->write(QByteArray::fromStdString(std::to_string(i+1)+ ". " + list[i]));
+
+}
+
+void tcpServer::slotLoadChatRoom(string servmsg)
+{
+    //парсим полученное сервером сообщение
+    string login = servmsg.substr(0,servmsg.find("&"));
+    string chatName = servmsg.substr(servmsg.find("&") + 1, servmsg.rfind("&") - servmsg.find("&") - 1);
+    int multiplier = std::stoi(servmsg.substr(servmsg.rfind("&") + 1, servmsg.length()));
+
+    int id = loginToSocket(login);//получаем сокет по логину
+    if(id != 0)
+    {
+        //посылаю на клиент по одному сообщению из диапазона, зависящем от множителя, который хранится на клиенте
+        //и передается в служебном сообщении
+        if (multiplier == 1)//первое открытие переписки
+        {
+            for (int i = 0; i < 51; i++)
+                //добавить проверку на пустую строку либо здесь либо в чтении из файла
+                mp[id]->write(QByteArray::fromStdString(read_from_file(chatName, i)));
+        }
+        else//просмотр старых сообщений
+        {
+            for (int i = 50 * (multiplier - 1) + 1; i < 50 * multiplier + 1; i++)
+                //добавить проверку на пустую строку либо здесь либо в чтении из файла
+                mp[id]->write(QByteArray::fromStdString(read_from_file(chatName, i)));
+        }
+    }
+
 }

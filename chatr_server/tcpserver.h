@@ -23,7 +23,10 @@ public slots:
     void slotNewConnection();
     void slotServerRead();
     void slotDisconect();
+    //void slotServerLoadMessage();
     void slotServerWriteMessage(string message);
+    void slotServerSendChatlist(string login);
+    void slotLoadChatRoom(string servmsg);
 
 private:
     QTcpServer * serv;

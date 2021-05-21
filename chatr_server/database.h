@@ -36,6 +36,8 @@ QByteArray registration(string logpass);
 QByteArray message(string msgData);
 QByteArray chatCreation(string chatData);
 QByteArray chatUserAdd(string msgData);
+QByteArray chatUserDel(string msgData);
+vector<string> getChatlist(string login);
 
 void BDSocketClear(int socket_id);
 void oldSocketsClear();

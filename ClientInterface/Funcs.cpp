@@ -39,3 +39,11 @@ QByteArray server_query(QString funcSwitch, QString first, QString second, QStri
     return array;
 }
 
+QByteArray server_query(QString funcSwitch, QString arg)
+{
+    QString message = funcSwitch+"&"+arg;
+    QByteArray array;
+    array.append(message.toUtf8());
+    return array;
+}
+

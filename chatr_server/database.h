@@ -23,7 +23,7 @@ using std::pair;
 using std::string;
 using std::vector;
 
-QByteArray read_from_file(string chatName, int counterNum);
+string read_from_file(string chatName, int counterNum);
 bool write_to_file(string login, string chatName, string msg);
 
 
@@ -37,6 +37,7 @@ QByteArray message(string msgData);
 QByteArray chatCreation(string chatData);
 QByteArray chatUserAdd(string msgData);
 QByteArray chatUserDel(string msgData);
+vector<string> getChatlist(string login);
 
 void BDSocketClear(int socket_id);
 void oldSocketsClear();

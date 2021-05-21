@@ -3,8 +3,11 @@
 bool flag = true;
 const string path = "D:\\chat\\chat_git\\GroupProject_Chat\\chatStorage\\";
 
-QByteArray read_from_file(string chatName, int counterNum)
+string read_from_file(string chatName, int serialNum)
 {
+    //сериалНум - порядковый номер сообщения которое необходимо вывести
+    //для слотСерверВрайтМесседж значение вшито в код и равно 0(новейшее сообщение переписки)
+    //для слотЛодЧатРум задается итератором из заданного множителем диапазона(первая подгрузка переписки и просмотр старых сообщений)
     string str;
     ifstream file(path + chatName + ".txt", std::ios::in);
     if (!file.is_open())
@@ -13,17 +16,24 @@ QByteArray read_from_file(string chatName, int counterNum)
     }
     else
     {
+
+        string buf;
         int counter = 0;
-        while (!file.eof() && counter < counterNum)
+        //цикл переводит курсор на нужную строку
+        while (!file.eof() && counter < serialNum)
         {
-            string buf;
             std::getline(file, buf);
-            str += buf + " &";
             counter++;
+            buf = "";
         }
+        //считываем нужное сообщение
+        std::getline(file, buf);
+        str = "mChat&" + buf;//подумал, что надо добавить какой-то флаг для вычленения сообщения на клиенте
     }
+
     file.close();
-    return QByteArray::fromStdString(str);
+    //добавить проверку на пустоту строки, чтобы не забивать модели пустыми сообщениями
+    return str;
 }
 
 bool write_to_file(string login, string chatName, string msg)
@@ -287,4 +297,23 @@ QByteArray chatUserDel(std::string msgData)
     qr.exec();
 
     return "user deleted";
+}
+
+vector<string> getChatlist(string login){
+
+    vector<string> list;
+
+    QSqlDatabase db = init_db();
+    QSqlQuery qr = QSqlQuery(db);
+    //запос к бд на вывод всех чатов по логину
+    qr.prepare("select chatname from chatlist where array_length(array_positions(userlist, :logname), 1) > 0;");
+    qr.bindValue(":logname", QString::fromStdString(login));
+    qr.exec();
+    //добавляем названия чата в вектор стрингов
+    while(qr.next())
+        list.push_back(qr.value(0).toString().toStdString() + ";");
+
+    db.close();
+
+    return list;
 }

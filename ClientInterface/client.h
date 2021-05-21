@@ -28,7 +28,6 @@ public slots:
     void reconnect();
     void receiveMessage(QString msg);
     void receiveChatCreation(QString chatname, QString contact);
-    void receiveAddUserToChat(QString chatname, QString newuser);
 
 private slots:
     void slot_connected();

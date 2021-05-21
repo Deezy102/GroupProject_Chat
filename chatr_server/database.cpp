@@ -3,7 +3,7 @@
 bool flag = true;
 const string path = "D:\\chat\\chat_git\\GroupProject_Chat\\chatStorage\\";
 
-string read_from_file(string chatName, int counterNum)
+QByteArray read_from_file(string chatName, int counterNum)
 {
     string str;
     ifstream file(path + chatName + ".txt", std::ios::in);
@@ -23,7 +23,7 @@ string read_from_file(string chatName, int counterNum)
         }
     }
     file.close();
-    return str;
+    return QByteArray::fromStdString(str);
 }
 
 bool write_to_file(string login, string chatName, string msg)
@@ -246,7 +246,7 @@ QByteArray chatUserAdd(std::string msgData)
     QString chatName = QString::fromStdString(msgData.substr(0, msgData.find("&")));
     msgData.erase(0,chatName.size() + 1);
     QString userLogin = QString::fromStdString(msgData.substr(0, msgData.find("&")));
-    msgData.erase(0,chatName.size() + 1);
+    //msgData.erase(0,chatName.size() + 1);
 
     QSqlDatabase db = init_db();
 
@@ -271,3 +271,20 @@ QByteArray chatUserAdd(std::string msgData)
     return "fail user addition";
 }
 
+
+QByteArray chatUserDel(std::string msgData)
+{
+    QString chatName = QString::fromStdString(msgData.substr(0, msgData.find("&")));
+    msgData.erase(0,chatName.size() + 1);
+    QString userLogin = QString::fromStdString(msgData.substr(0, msgData.find("&")));
+    //msgData.erase(0,chatName.size() + 1);
+
+    QSqlDatabase db = init_db();
+
+    QSqlQuery qr = QSqlQuery(db);
+    QString buf = "update chatlist set userlist = array_remove_item((select userlist from chatlist where chatname like '%1'), '%2')where chatname like '%1';";
+    qr.prepare(buf.arg(chatName, userLogin));
+    qr.exec();
+
+    return "user deleted";
+}

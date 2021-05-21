@@ -49,7 +49,7 @@ void tcpServer::slotNewConnection()
         mp[id] = clientSock;
         mp[id]->write("u connected to the server");
 
-        qDebug() << QString::fromUtf8("У нас новое соединение! Количество пользователей ") << user_counts << id;
+        qDebug() << QString::fromUtf8("У нас новое соединение (сокет: %1). Количество пользователей:").arg(id) << user_counts;
 
         connect(mp[id], &QTcpSocket::readyRead, this, &tcpServer::slotServerRead);
         connect(mp[id], &QTcpSocket::disconnected, this, &tcpServer::slotDisconect);
@@ -71,17 +71,20 @@ void tcpServer::slotServerRead()
         if (keyWord == "auth")
             transfer = authorization(msg + "&" + std::to_string(clientsock->socketDescriptor()));
 
-        if (keyWord== "reg")
+        else if (keyWord== "reg")
             transfer = registration(msg);
 
-        if (keyWord == "msg")
+        else if (keyWord == "msg")
             transfer = message(msg);
 
-        if (keyWord == "chatcrt")
+        else if (keyWord == "chatcrt")
             transfer = chatCreation(msg);
 
-        if (keyWord == "chatUserAdd")
+        else if (keyWord == "chatUserAdd")
             transfer = chatUserAdd(msg);
+
+        else if (keyWord == "chatUserDel")
+            transfer = chatUserDel(msg);
 
         if (transfer.contains("msg&"))
             slotServerWriteMessage(transfer.toStdString());
@@ -113,7 +116,7 @@ void tcpServer::slotServerWriteMessage(string chatName)
         int id = loginToSocket(buf);
 
         if (id != 0)
-            mp[id]->write(QByteArray::fromStdString(read_from_file(chatNameCopy, 1)));
+            mp[id]->write(read_from_file(chatNameCopy, 1));
     }
 }
 

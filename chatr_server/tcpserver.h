@@ -23,6 +23,7 @@ public slots:
     void slotNewConnection();
     void slotServerRead();
     void slotDisconect();
+    //void slotServerLoadMessage();
     void slotServerWriteMessage(string message);
 
 private:

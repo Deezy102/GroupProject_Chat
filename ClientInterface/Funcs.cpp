@@ -24,11 +24,3 @@ QByteArray server_query(QString login, QString chatName, QString msg,  QString f
     array.append(message.toUtf8());
     return array;
 }
-
-QByteArray server_query(QString login, QString funcSwitch)
-{
-    QString message = funcSwitch+"&"+login;
-    QByteArray array;
-    array.append(message.toUtf8());
-    return array;
-}

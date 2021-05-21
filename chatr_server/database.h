@@ -7,7 +7,6 @@
 #include <QSqlRecord>
 #include <QSqlError>
 #include <QSqlQuery>
-#include <QList>
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -35,7 +34,7 @@ QByteArray authorization(string logpass);
 QByteArray registration(string logpass);
 QByteArray message(string msgData);
 QByteArray chatCreation(string chatData);
-QByteArray chatUserAdd(string msgData);
+vector<string> getChatlist(string login);
 
 void BDSocketClear(int socket_id);
 void oldSocketsClear();

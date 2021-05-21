@@ -7,7 +7,6 @@
 #include <string>
 #include <QTcpSocket>
 
-
 class Client : public QObject
 {
     Q_OBJECT
@@ -39,7 +38,7 @@ private slots:
 
 private:
     QTcpSocket *client_sock;
-    const QString ipAddress = "127.0.0.1";
+    const QString ipAddress = "127.000.000.001";
 };
 
 

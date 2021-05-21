@@ -3,24 +3,39 @@
 bool correctLogPass(QString login, QString pass, QString verpass)
 {
     if (pass == verpass)
-        return !(QString(login + pass).contains(" ") || QString(login + pass).contains("&"));
+        return clearlogin(login+pass);
 
     return false;
 }
 
-QByteArray server_query(QString name, QString password, QString funcSwitch)
+bool clearlogin(QString logpass)
 {
-    QString message = funcSwitch+"&"+name+"&"+password;
-    //qDebug() << message;
+    qDebug() << logpass;
+    vector<QString> forbidden = {"&", "_", " "};
+
+    bool flag = true;
+
+    for (int i = 0; i < int(forbidden.size()); i++)
+        flag *= !logpass.contains(forbidden[i]);
+
+    qDebug() << flag;
+    return flag;
+}
+
+
+QByteArray server_query(QString funcSwitch, QString first, QString second)
+{
+    QString message = funcSwitch+"&"+first+"&"+second;
     QByteArray array;
     array.append(message.toUtf8());
     return array;
 }
 
-QByteArray server_query(QString login, QString chatName, QString msg,  QString funcSwitch)
+QByteArray server_query(QString funcSwitch, QString first, QString second, QString msg)
 {
-    QString message = funcSwitch+"&"+login+"&"+chatName+"&"+msg;
+    QString message = funcSwitch+"&"+first+"&"+second+"&"+msg;
     QByteArray array;
     array.append(message.toUtf8());
     return array;
 }
+

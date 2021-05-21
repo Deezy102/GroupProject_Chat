@@ -5,7 +5,6 @@ QString client_login = "";
 
 Client::Client(QObject *parent) : QObject(parent)
 {
-
     client_sock = new QTcpSocket(this);
     client_sock->connectToHost(ipAddress, 12345);
     connect(client_sock,SIGNAL(connected()),SLOT(slot_connected()));
@@ -14,7 +13,6 @@ Client::Client(QObject *parent) : QObject(parent)
 
 Client::~Client()
 {
-    //qDebug() << "destructor";
     client_sock->disconnectFromHost();
 }
 
@@ -38,7 +36,6 @@ void Client::parsing(QString msg)
         emit serverSucReg();
     if (msg == "choose antoher login")
         emit serverFailReg();
-
 }
 
 void Client::slot_readyRead()
@@ -52,23 +49,22 @@ void Client::slot_readyRead()
         message += array.toStdString();
     }
     parsing(QString::fromStdString(message));
-    qDebug() << "server: " << QString::fromStdString(message);
+
+    qDebug() << "server: " << QString::fromStdString(message); //del
 }
 
 void Client::receiveLogData(QString l_username, QString l_password)
 {
     client_login = l_username;
-    client_sock->write(server_query(l_username, l_password, "auth"));
+    client_sock->write(server_query( "auth", l_username, l_password));
 }
 
 void Client::receiveRegData(QString l_username, QString l_password, QString l_verpassword)
 {
    if (correctLogPass(l_username, l_password, l_verpassword))
-   {
-       client_sock->write(server_query(l_username, l_password, "reg"));
-   }
+       client_sock->write(server_query("reg", l_username, l_password));
    else
-   emit clientFailVerifpass();
+       emit clientFailVerifpass();
 }
 
 void Client::reconnect()
@@ -79,18 +75,17 @@ void Client::reconnect()
 void Client::receiveMessage(QString msg)
 {
     if (!msg.isEmpty())
-        //геттер имени чата из модели
-        client_sock->write(server_query(client_login, "pudge_pidzhak", msg, "msg"));
+        client_sock->write(server_query("msg", client_login, "pudge_pidzhak", msg));
 }
 
 void Client::receiveChatCreation(QString chatname, QString contact)
 {
     contact += "&" + client_login;
-    client_sock->write(server_query(chatname, contact, "chatcrt"));
-    qDebug() << chatname << contact;
+    client_sock->write(server_query("chatcrt", chatname, contact));
 }
 
 void Client::receiveAddUserToChat(QString chatname, QString newuser)
 {
+    client_sock->write(server_query("chatUserAdd", chatname, newuser));
     qDebug() << chatname << newuser;
 }

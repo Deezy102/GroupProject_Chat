@@ -24,7 +24,8 @@ public slots:
     void slotServerRead();
     void slotDisconect();
     void slotServerWriteMessage(string message);
-
+    void slotServerSendChatlist(string login);
+    void slotLoadChatRoom(string servmsg);
 private:
     QTcpServer * serv;
     QTcpSocket * sock;
@@ -32,7 +33,7 @@ private:
     int user_counts;
     std::string msg;
     QMap<int, QTcpSocket*> mp;
-    const QString ipAddress = "127.0.0.1";
+    const QString ipAddress = "127.000.000.001";
 };
 
 #endif // TCPSERVER_H

@@ -84,11 +84,20 @@ void tcpServer::slotServerRead()
         {
             recieve = chatCreation(msg);
         }
+        if  (keyWord == "chatld")
+        {
+            slotLoadChatRoom(msg);
+        }
+        if (keyWord == "list")
+        {
+            slotServerSendChatlist(msg);
+        }
         if (recieve.contains("msg&"))
         {
             //qDebug() << "mes&";
             slotServerWriteMessage(recieve.toStdString());
         }
+
         else
             clientsock->write(recieve);
     }
@@ -121,14 +130,53 @@ void tcpServer::slotServerWriteMessage(string chatName)
 
         int id = loginToSocket(buf);
         if (id != 0)
-            mp[id]->write(QByteArray::fromStdString(read_from_file(chatNameCopy, 1)));
+            mp[id]->write(QByteArray::fromStdString(read_from_file(chatNameCopy, 0)));//поменял второй аргумент из-за изменения функции
 
     }
 
     //clientsock->write(QByteArray::fromStdString(read_from_file(chatName)));
 
 }
+void tcpServer::slotServerSendChatlist(string login)
+{
+    //вектор стрингов хранит список чатов, в которых состоит пользователь
+    vector<string> list = getChatlist(login);
 
+    int id = loginToSocket(login); //получаем сокет по логину
+
+    if (id != 0)
+        for (int i = 0; i < list.size(); i++)//посылаем на клиент по одному названию чата
+            mp[id]->write(QByteArray::fromStdString(std::to_string(i+1)+ ". " + list[i]));
+
+}
+
+void tcpServer::slotLoadChatRoom(string servmsg)
+{
+    //парсим полученное сервером сообщение
+    string login = servmsg.substr(0,servmsg.find("&"));
+    string chatName = servmsg.substr(servmsg.find("&") + 1, servmsg.rfind("&") - servmsg.find("&") - 1);
+    int multiplier = std::stoi(servmsg.substr(servmsg.rfind("&") + 1, servmsg.length()));
+
+    int id = loginToSocket(login);//получаем сокет по логину
+    if(id != 0)
+    {
+        //посылаю на клиент по одному сообщению из диапазона, зависящем от множителя, который хранится на клиенте
+        //и передается в служебном сообщении
+        if (multiplier == 1)//первое открытие переписки
+        {
+            for (int i = 0; i < 51; i++)
+                //добавить проверку на пустую строку либо здесь либо в чтении из файла
+                mp[id]->write(QByteArray::fromStdString(read_from_file(chatName, i)));
+        }
+        else//просмотр старых сообщений
+        {
+            for (int i = 50 * (multiplier - 1) + 1; i < 50 * multiplier + 1; i++)
+                //добавить проверку на пустую строку либо здесь либо в чтении из файла
+                mp[id]->write(QByteArray::fromStdString(read_from_file(chatName, i)));
+        }
+    }
+
+}
 void tcpServer::slotDisconect()
 {
     QTcpSocket *clientsock = (QTcpSocket*)sender();

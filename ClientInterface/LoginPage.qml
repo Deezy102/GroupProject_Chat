@@ -103,7 +103,7 @@ Page {
         onClicked: {
             client.receiveLogData(usernameField.text, passwordField.text)
             userLogin = usernameField.text
-            //root.sucAuth() //DELETE THIS!!!
+            root.sucAuth() //DELETE THIS!!!
         }
 
         Text {
@@ -311,6 +311,7 @@ Page {
 
         placeholderTextColor: "#ccc7c5c5"
         placeholderText: qsTr("Password")
+        inputMask: ""
 
         color: "#ffffff"
         background: passwordFieldBackground

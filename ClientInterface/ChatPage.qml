@@ -365,9 +365,9 @@ Page {
 
     ScrollView {
         id: chatListScroll
-        anchors.top: toolBar.top
-        anchors.bottom: root.bottom
-        anchors.left: root.left
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
         width: parent.width * 0.3
         height: root.height-toolBar.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -409,11 +409,11 @@ Page {
 
         ListView {
             id: chatView
-            anchors.top: toolBar.bottom
-            anchors.bottom: msgField.top
-            anchors.right: root.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
             width: root.width * 0.7
-            model: [] //надо подгружать с сервера
+            model: ["qeawgedr"] //надо подгружать с сервера
             delegate: ItemDelegate {
                 Text {
                     text: modelData

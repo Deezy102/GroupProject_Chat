@@ -3,11 +3,41 @@
 bool flag = true;
 const string path = "D:\\chat\\chat_git\\GroupProject_Chat\\chatStorage\\";
 
-string read_from_file(string chatName, int serialNum)
+//string read_from_file(string chatName, int serialNum)
+//{
+//    //сериалНум - порядковый номер сообщения которое необходимо вывести
+//    //для слотСерверВрайтМесседж значение вшито в код и равно 0(новейшее сообщение переписки)
+//    //для слотЛодЧатРум задается итератором из заданного множителем диапазона(первая подгрузка переписки и просмотр старых сообщений)
+//    string str;
+//    ifstream file(path + chatName + ".txt", std::ios::in);
+//    if (!file.is_open())
+//    {
+//        qDebug() << "try again";
+//    }
+//    else
+//    {
+
+//        string buf;
+//        int counter = 0;
+//        //цикл переводит курсор на нужную строку
+//        while (!file.eof() && counter < serialNum)
+//        {
+//            std::getline(file, buf);
+//            counter++;
+//            buf = "";
+//        }
+//        //считываем нужное сообщение
+//        std::getline(file, buf);
+//        str = "mChat&" + buf;//подумал, что надо добавить какой-то флаг для вычленения сообщения на клиенте
+//    }
+
+//    file.close();
+//    //добавить проверку на пустоту строки, чтобы не забивать модели пустыми сообщениями
+//    return str;
+//}
+
+QByteArray read_from_file(string chatName, int counterNum)
 {
-    //сериалНум - порядковый номер сообщения которое необходимо вывести
-    //для слотСерверВрайтМесседж значение вшито в код и равно 0(новейшее сообщение переписки)
-    //для слотЛодЧатРум задается итератором из заданного множителем диапазона(первая подгрузка переписки и просмотр старых сообщений)
     string str;
     ifstream file(path + chatName + ".txt", std::ios::in);
     if (!file.is_open())
@@ -16,24 +46,17 @@ string read_from_file(string chatName, int serialNum)
     }
     else
     {
-
-        string buf;
         int counter = 0;
-        //цикл переводит курсор на нужную строку
-        while (!file.eof() && counter < serialNum)
+        while (!file.eof() && counter < counterNum)
         {
+            string buf;
             std::getline(file, buf);
+            str += buf + " &";
             counter++;
-            buf = "";
         }
-        //считываем нужное сообщение
-        std::getline(file, buf);
-        str = "mChat&" + buf;//подумал, что надо добавить какой-то флаг для вычленения сообщения на клиенте
     }
-
     file.close();
-    //добавить проверку на пустоту строки, чтобы не забивать модели пустыми сообщениями
-    return str;
+    return QByteArray::fromStdString(str);
 }
 
 bool write_to_file(string login, string chatName, string msg)
@@ -233,10 +256,12 @@ QByteArray chatCreation(std::string chatData)
     QSqlDatabase db = init_db();
 
     QSqlQuery qr = QSqlQuery(db);
-    qr.prepare(QString("select * from chatlist where chatname like '%1'").arg(chatName));
+    QString buf = "select count(*) from users where login like '%1' and (select count(*) from chatlist where chatname = '%2') = 0;";
+    qr.prepare(buf.arg(contact2, chatName));
     qr.exec();
+    qr.next();
 
-    if (qr.size()==0)
+    if (qr.value(0).toInt() == 1)
     {
         qr.prepare(QString("insert into chatlist (chatname, userlist) values ('%1', '{%2, %3}')").arg(chatName, contact1, contact2));
         qr.exec();
@@ -248,7 +273,7 @@ QByteArray chatCreation(std::string chatData)
 
     db.close();
 
-    return "bad name of chat";
+    return "bad name of chat or login";
 }
 
 QByteArray chatUserAdd(std::string msgData)

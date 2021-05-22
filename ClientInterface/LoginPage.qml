@@ -26,6 +26,12 @@ Page {
             incorrect.visible = true
         }
 
+        onClientFailVerifpass: {
+            incorrect.text = "Incorrect login or password\nOr password and verified password are not equal"
+            incorrect.visible = true
+
+        }
+
         onServerSucAuth: {
             root.sucAuth()
             incorrect.visible = false
@@ -55,7 +61,6 @@ Page {
             onClicked: popup.close()
         }
 
-        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
         contentItem: Text {
             anchors.centerIn: parent
             font.pixelSize: 18
@@ -67,16 +72,15 @@ Page {
     Text {
         id: incorrect
         height: 40
-        anchors.left: verifyPasswordField.left
+        anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: verifyPasswordField.bottom
         anchors.topMargin: 10
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
 
         visible: false
         color: "#FF0040"
         font.pixelSize: 12
-
-
-
     }
 
     Text {

@@ -22,7 +22,7 @@ Page {
         }
 
         onServerFailReg: {
-            incorrect.text = "Sign Up failed"
+            incorrect.text = "Choose another login"
             incorrect.visible = true
         }
 

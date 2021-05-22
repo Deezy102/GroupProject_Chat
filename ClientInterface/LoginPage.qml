@@ -26,7 +26,10 @@ Page {
             incorrect.visible = true
         }
 
-        onServerSucAuth: root.sucAuth()
+        onServerSucAuth: {
+            root.sucAuth()
+            incorrect.visible = false
+        }
 
         onServerFailAuth: {
             incorrect.text = "Sign In failed"
@@ -311,6 +314,7 @@ Page {
 
         placeholderTextColor: "#ccc7c5c5"
         placeholderText: qsTr("Password")
+        echoMode: TextInput.Password
 
         color: "#ffffff"
         background: passwordFieldBackground
@@ -334,6 +338,7 @@ Page {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: passwordField.bottom
         anchors.topMargin: 10
+        echoMode: TextInput.Password
 
         placeholderTextColor: "#ccc7c5c5"
         placeholderText: qsTr("Verify password")

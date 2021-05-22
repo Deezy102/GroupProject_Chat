@@ -23,7 +23,7 @@ using std::pair;
 using std::string;
 using std::vector;
 
-string read_from_file(string chatName, int counterNum);
+QByteArray read_from_file(string chatName, int counterNum);
 bool write_to_file(string login, string chatName, string msg);
 
 

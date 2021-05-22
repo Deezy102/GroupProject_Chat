@@ -11,7 +11,7 @@ bool correctLogPass(QString login, QString pass, QString verpass)
 bool clearlogin(QString logpass)
 {
     qDebug() << logpass;
-    vector<QString> forbidden = {"&", "_", " ", ""};
+    vector<QString> forbidden = {"&", "_", " "};
 
     bool flag = true;
 

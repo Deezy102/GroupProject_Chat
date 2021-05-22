@@ -3,7 +3,7 @@
 bool correctLogPass(QString login, QString pass, QString verpass)
 {
     if (pass == verpass && !pass.isEmpty())
-        return checkText(login+pass);
+        return (checkText(login, "") && checkText(pass, "pass"));
 
     return false;
 }
@@ -40,22 +40,22 @@ QByteArray server_query(QString funcSwitch, QString arg)
 }
 
 
-bool checkText(QString str)
+bool checkText(QString str, QString fswitch)
 {
-    vector<QString> forbidden = {"&", "_", " "};
-
     bool flag = true;
 
-    int spaceCounter = 0;
+    vector<QString> forbidden = {"&", "_", " "};
 
-    for (int i = 0; i < str.length(); i++)
-        if  (str.contains(" "))
-             spaceCounter++;
+    if (fswitch == "pass")
+    {
+        forbidden.clear();
+        forbidden = {"&", "_"};
+    }
 
-    if (str.length() != spaceCounter && !str.isEmpty())
+    if (!str.isEmpty())
     {
         for (int i = 0; i < int(forbidden.size()); i++)
-            flag *= !(str).contains(forbidden[i]);
+            flag *= !str.contains(forbidden[i]);
 
         return flag;
     }

@@ -80,8 +80,9 @@ void Client::receiveMessage(QString msg)
 
 void Client::receiveChatCreation(QString chatname, QString contact)
 {
-    if (checkText(chatname) && checkText(contact))
+    if (checkText(chatname, "") && checkText(contact, ""))
     {
+        qDebug() << "XYI";
         contact = client_login + "&" + contact;
         client_sock->write(server_query("chatcrt", chatname, contact));
     }
@@ -91,6 +92,6 @@ void Client::receiveChatCreation(QString chatname, QString contact)
 void Client::receiveAddUserToChat(QString chatname, QString newuser)
 {
     client_sock->write(server_query("chatUserAdd", chatname, newuser));
-    qDebug() << chatname << newuser;
+    //qDebug() << chatname << newuser;
 }
 

@@ -12,6 +12,6 @@ QByteArray server_query(QString login, QString chatName, QString msg,  QString f
 QByteArray server_query(QString login, QString funcSwitch);
 
 bool correctLogPass(QString login, QString pass, QString verpass);
-bool checkText(QString logpass);
+bool checkText(QString logpass, QString fswitch);
 
 #endif // FUNCS_H

@@ -2,25 +2,17 @@
 
 bool correctLogPass(QString login, QString pass, QString verpass)
 {
-    if (pass == verpass)
-        return clearlogin(login+pass);
+    if (pass == verpass && !pass.isEmpty())
+        return checkText(login+pass);
 
     return false;
 }
 
-bool clearlogin(QString logpass)
-{
-    qDebug() << logpass;
-    vector<QString> forbidden = {"&", "_", " "};
+//bool clearlogin(QString logpass)
+//{
+//    qDebug() << logpass;
 
-    bool flag = true;
-
-    for (int i = 0; i < int(forbidden.size()); i++)
-        flag *= !logpass.contains(forbidden[i]);
-
-    qDebug() << flag;
-    return flag;
-}
+//}
 
 
 QByteArray server_query(QString funcSwitch, QString first, QString second)
@@ -45,5 +37,29 @@ QByteArray server_query(QString funcSwitch, QString arg)
     QByteArray array;
     array.append(message.toUtf8());
     return array;
+}
+
+
+bool checkText(QString str)
+{
+    vector<QString> forbidden = {"&", "_", " "};
+
+    bool flag = true;
+
+    int spaceCounter = 0;
+
+    for (int i = 0; i < str.length(); i++)
+        if  (str.contains(" "))
+             spaceCounter++;
+
+    if (str.length() != spaceCounter && !str.isEmpty())
+    {
+        for (int i = 0; i < int(forbidden.size()); i++)
+            flag *= !(str).contains(forbidden[i]);
+
+        return flag;
+    }
+    else
+        return false;
 }
 

@@ -80,8 +80,11 @@ void Client::receiveMessage(QString msg)
 
 void Client::receiveChatCreation(QString chatname, QString contact)
 {
-    contact += "&" + client_login;
-    client_sock->write(server_query("chatcrt", chatname, contact));
+    if (checkText(chatname) && checkText(contact))
+    {
+        contact = client_login + "&" + contact;
+        client_sock->write(server_query("chatcrt", chatname, contact));
+    }
 }
 
 

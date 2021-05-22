@@ -123,7 +123,7 @@ void tcpServer::slotServerWriteMessage(string chatName)
         int id = loginToSocket(buf);
 
         if (id != 0)
-            mp[id]->write(QByteArray::fromStdString(read_from_file(chatNameCopy, 0)));
+            mp[id]->write(read_from_file(chatNameCopy, 1));
     }
 }
 
@@ -172,13 +172,13 @@ void tcpServer::slotLoadChatRoom(string servmsg)
         {
             for (int i = 0; i < 51; i++)
                 //добавить проверку на пустую строку либо здесь либо в чтении из файла
-                mp[id]->write(QByteArray::fromStdString(read_from_file(chatName, i)));
+                mp[id]->write(read_from_file(chatName, 1));
         }
         else//просмотр старых сообщений
         {
             for (int i = 50 * (multiplier - 1) + 1; i < 50 * multiplier + 1; i++)
                 //добавить проверку на пустую строку либо здесь либо в чтении из файла
-                mp[id]->write(QByteArray::fromStdString(read_from_file(chatName, i)));
+                mp[id]->write(read_from_file(chatName, 1));
         }
     }
 

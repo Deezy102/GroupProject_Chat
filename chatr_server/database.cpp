@@ -1,3 +1,7 @@
+/**
+*  \file
+*  \brief Файл с реализацией функций работы с БД и хранилищем переписок
+*/
 #include "database.h"
 
 bool flag = true;
@@ -36,6 +40,13 @@ const string path = "D:\\chat\\chat_git\\GroupProject_Chat\\chatStorage\\";
 //    return str;
 //}
 
+/**
+ * @warning будет использоваться другая!!!!
+ * @brief read_from_file
+ * @param chatName
+ * @param counterNum
+ * @return
+ */
 QByteArray read_from_file(string chatName, int counterNum)
 {
     string str;
@@ -58,7 +69,30 @@ QByteArray read_from_file(string chatName, int counterNum)
     file.close();
     return QByteArray::fromStdString(str);
 }
-
+/**
+ * @brief write_to_file отвечает за запись сообщения в соответствующий файл переписки
+ * @param login - переменная, отвечающая за имя пользователя
+ * @param chatName - переменная, отвечающая за название переписки, в которую будет произведена запись
+ * @param msg - переменная, отвечающая за сообщение, которое будет записано в файл
+ * @return возвращает булево значение об успехе выполнения функции
+ *
+ * Краткое описание работы:
+ *
+ * Функция получает на вход три параметра: логин, имя чата, сообщение.
+ *
+ * Далее по полученному названию чата открывается, соответствующий файл переписки
+ * (если его нет, то создается и функция вызывается еще раз).
+ *
+ * После чего создается новый файл, в который записывается новое сообщение с добавлением даты и именем отправителя.
+ *
+ * Затем данные из старого файла переписываются в новый файл.
+ *
+ * Старый файл удаляется.
+ *
+ * Новый файл изменяет название на имя старого файла.
+ *
+ * Возращается булево значение о выполнении функции.
+ */
 bool write_to_file(string login, string chatName, string msg)
 {
     ifstream oldFile;
@@ -118,7 +152,13 @@ bool write_to_file(string login, string chatName, string msg)
 //        return message(msg);
 //    return "error";
 //}
-
+/**
+ * @brief init_db отвечает за подключение и открытие базы данных PostgreSQL
+ * @return возвращается объект базы данных
+ *
+ * Функция имеет флаг. Если он равен true, то создается новое подключение и открытие базы данных.
+ * Если же он равен false, то происходит подключение к уже существующему соединению.
+ */
 QSqlDatabase init_db()
 {
     QSqlDatabase db;
@@ -139,7 +179,24 @@ QSqlDatabase init_db()
         qDebug() << "db has not opened";
     return db;
 }
-
+/**
+ * @brief registration отвечает за регистрацию нового пользователя в базе данных
+ * @param logpass - это строка, содержащая логин и пароль будущего пользователя
+ * @return возвращается сообщение об успешной или неуспешной регистрации пользователя
+ *
+ * Описание работы:
+ *
+ * Функция делит строку, полученную на вход, на логин и пароль.
+ *
+ * После этого создает подключение к базе данных и формирует SQL-запрос к ней на наличие такого логина в таблице пользователей.
+ *
+ * Если ответ запроса равен нулю строк (т.е. нет пользователей с таким логином), то формируется новый SQL-запрос на включение
+ * пользователя с данной парой логин-пароль в таблицу пользователей, закрывает соединение с БД и
+ * возвращается сообщение об успешной регистрации.
+ *
+ * В противном случае, закрывается соединение с БД и возвращается сообщение о неуспешной регистрации.
+ *
+ */
 QByteArray registration(string logpass)
 {
     QString login = QString::fromStdString(logpass.substr(0,logpass.find("&")));
@@ -166,7 +223,24 @@ QByteArray registration(string logpass)
 
     return "choose antoher login";
 }
-
+/**
+ * @brief authorization отвечает за авторизацию пользователя
+ * @param logpass - это строка, содержащая логин, пароль и сокет существующего пользователя
+ * @return сообщение об успешной или неуспешной авторизации
+ *
+ * Описание работы:
+ *
+ * Функция делит полученную строку на логин, пароль и номер сокета.
+ *
+ * Создает подключение к БД и формирует запрос на существование записи о пользователе в таблице.
+ *
+ * Если запись с данной парой логин-пароль существует, то формируется новый запрос на внесение изменения в запись
+ * данного пользователя. Данный запрос добавляет информацию о текущем сокете пользователя. Возвращает
+ * сообщение об успешной авторизации.
+ *
+ * Если запись с данной парой логин-пароль не нашлась возвращается сообщение об ошибке пользователя.
+ *
+ */
 QByteArray authorization(string logpass)
 {
     QString login = QString::fromStdString(logpass.substr(0,logpass.find("&")));
@@ -191,7 +265,11 @@ QByteArray authorization(string logpass)
     db.close();
     return "invalid login or password";
 }
-
+/**
+ * @brief message отвечает за вызов функции записи в файл и слота для отправки сообщения пользователям.
+ * @param msgData - переменная, содержащая информацию об отправителе, названии переписки и самого сообщения.
+ * @return возвращает флаг и название измененной переписки для последующего парсинга
+ */
 QByteArray message(string msgData)
 {
     string login = msgData.substr(0,msgData.find("&"));
@@ -204,7 +282,10 @@ QByteArray message(string msgData)
 
     return QByteArray::fromStdString("msg&" +chatName);
 }
-
+/**
+ * @brief BDSocketClear отвечает за очистку столбца current_socket в таблице users.
+ * @param socket_id - номер сокета, который нужно удалить.
+ */
 void BDSocketClear(int socket_id)
 {
     QSqlDatabase db = init_db();
@@ -216,7 +297,11 @@ void BDSocketClear(int socket_id)
 
     db.close();
 }
-
+/**
+ * @brief loginToSocket отвечает за получением номера сокета по имеющемуся логину.
+ * @param login - имя пользователя.
+ * @return возвращает номер сокета.
+ */
 int loginToSocket(std::string login)
 {
     QSqlDatabase db = init_db();
@@ -232,7 +317,9 @@ int loginToSocket(std::string login)
     db.close();
     return rtrn;
 }
-
+/**
+ * @brief oldSocketsClear очищает весь столбец current_socket
+ */
 void oldSocketsClear()
 {
     QSqlDatabase db = init_db();
@@ -243,7 +330,23 @@ void oldSocketsClear()
 
     db.close();
 }
-
+/**
+ * @brief chatCreation отвечает за создание нового чата.
+ * @param chatData - строка, содержащая название чата, имя первого и второго пользователя.
+ * @return сообщение об успешном или неудачном создании чата
+ *
+ * Описание работы:
+ *
+ * Функция делит полученную строка на название чата, логин первого пользователя и логин второго.
+ *
+ * Создает подключение к БД и формирует запрос на проверку существования собеседника и чата с таким названием.
+ *
+ * Если проверка пройдена, то в таблицу чатов добавляется запись о новом чате, закрывается соединение с БД и возвращается
+ * сообщение об успешном создании.
+ *
+ * Если проверка не прошла, то закрывается соединение с БД и возвращается сообщение о неудачном создании чата.
+ *
+ */
 QByteArray chatCreation(std::string chatData)
 {
     QString chatName = QString::fromStdString(chatData.substr(0, chatData.find("&")));
@@ -275,7 +378,22 @@ QByteArray chatCreation(std::string chatData)
 
     return "bad name of chat or login";
 }
-
+/**
+ * @brief chatUserAdd отвечает за добавление пользователя в существующий чат.
+ * @param msgData - строка, содержащая название чата и логин добавляемого пользователя.
+ * @return возвращает сообщение об успешном или неудачном добавлении пользователя
+ *
+ * Описание работы:
+ *
+ * Функция делит полученную строку на название чата и логин добавляемого пользователя.
+ *
+ * Создается подключение к БД и формируется SQL-запрос для проверки.
+ *
+ * Если проверка прошла успешно, то пользователь добавляется в массив участников для соответствующего чата, закрывается соединение
+ * с БД и возвращается сообщение об успешном добавлении.
+ *
+ * Если проверка не пройдена, то закрывается соединение с БД и возвращается сообщение о неудачном добавлении.
+ */
 QByteArray chatUserAdd(std::string msgData)
 {
     QString chatName = QString::fromStdString(msgData.substr(0, msgData.find("&")));
@@ -286,7 +404,8 @@ QByteArray chatUserAdd(std::string msgData)
     QSqlDatabase db = init_db();
 
     QSqlQuery qr = QSqlQuery(db);
-    QString buf = "select count(*) from chatlist where chatname = '%1' and not('%2' = ANY(userlist)) and (select count(*) from users where login like '%2') = 1;";
+    QString buf = "select count(*) from chatlist where chatname = '%1' "
+            "and not('%2' = ANY(userlist)) and (select count(*) from users where login like '%2') = 1;";
     qr.prepare(buf.arg(chatName, userLogin));
     qr.exec();
     qr.next();
@@ -306,7 +425,11 @@ QByteArray chatUserAdd(std::string msgData)
     return "fail user addition";
 }
 
-
+/**
+ * @brief chatUserDel отвечает за удаление пользователя из существующего чата.
+ * @param msgData - строка, содержащая имя чата, логин пользователя на удаление из чата.
+ * @return сообщение об успешном удалении.
+ */
 QByteArray chatUserDel(std::string msgData)
 {
     QString chatName = QString::fromStdString(msgData.substr(0, msgData.find("&")));
@@ -323,7 +446,11 @@ QByteArray chatUserDel(std::string msgData)
 
     return "user deleted";
 }
-
+/**
+ * @brief getChatlist формирует список доступных чатов.
+ * @param login - имя пользователя.
+ * @return вектор названий чатов.
+ */
 vector<string> getChatlist(string login){
 
     vector<string> list;

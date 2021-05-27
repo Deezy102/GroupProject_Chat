@@ -1,3 +1,7 @@
+/**
+*  \file
+*  \brief Заголовочный файл с описанием функций работы с базой данных и хранилищем переписки
+*/
 #pragma once
 #ifndef DATABASE_H
 #define DATABASE_H

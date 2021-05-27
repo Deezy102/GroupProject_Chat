@@ -1,7 +1,25 @@
+/**
+* \file
+* \brief Данный файл отвечает за реализацию класса TcpServer
+*
+* В данном классе представлена реализация конструктора и деструктора класса TcpServer,
+* а также реализация слотов, отвечающих за клиент-серверное "общение"
+*
+*/
 #include "tcpserver.h"
 
 
-
+/**
+ * @brief tcpServer::tcpServer Конструктор класса
+ * @param QObject *parent Ссылка на родительский класс
+ *
+ * При вызове конструктора класса:
+ *  - соединяется стандартный сигнал newConnection
+ * со слотом slotNewConnection;
+ *  - задается статус сервера;
+ *  - инициализируется счетчик, подключенных пользователей;
+ *  - вызывается функция очистки базы данных от информации о старых сокетах.
+ */
 tcpServer::tcpServer(QObject *parent) : QObject(parent)
 {
     serv = new QTcpServer(this);
@@ -18,7 +36,16 @@ tcpServer::tcpServer(QObject *parent) : QObject(parent)
 
     oldSocketsClear();
 }
-
+/**
+ * @brief tcpServer::~tcpServer Деструктор класса
+ *
+ * При вызове деструктора:
+ * - очищается структура данных типа map, содержащая информацию о имеющихся подключениях (номера сокетов);
+ * - вызывается функция очищающая базу данных от информации о подключениях;
+ * - закрывает сервер;
+ * - изменяет статус сервера.
+ *
+ */
 tcpServer::~tcpServer()
 {
     if (server_status)
@@ -36,7 +63,16 @@ tcpServer::~tcpServer()
         server_status = false;
     }
 }
-
+/**
+ * @brief tcpServer::slotNewConnection Слот, отвечающий за новое подключение
+ *
+ * При вызове слота:
+ * - увеличивается счетчик кол-ва подключенных пользователей;
+ * - добавляется информация о сокете подключившегося в мап;
+ * - на клиент отправляется сообщение об успешном подключении;
+ * - соединяются сигналы readyRead и disconnected со слотами slotServerRead и slotDisconnect соответственно;
+ *
+ */
 void tcpServer::slotNewConnection()
 {
     if (server_status)
@@ -55,7 +91,17 @@ void tcpServer::slotNewConnection()
         connect(mp[id], &QTcpSocket::disconnected, this, &tcpServer::slotDisconect);
     }
 }
-
+/**
+ * @brief tcpServer::slotServerRead Слот, отвечающий за чтение и парсинг полученного сообщения от клиента
+ *
+ * При вызове слота:
+ * - считывает указатель на сокет пользователя, от которого пришел сигнал;
+ * - считывает сообщение от клиента;
+ * - сообщение парсится:
+ *  + выявляется ключевое слово, отвечающее за вызов определенной функции,
+ *  + вызывается необходимая функция после прохождения условных операторов;
+ *
+ */
 void tcpServer::slotServerRead()
 {
     QTcpSocket *clientsock = (QTcpSocket*)sender();
@@ -99,7 +145,14 @@ void tcpServer::slotServerRead()
             clientsock->write(transfer);
     }
 }
-
+/**
+ * @brief tcpServer::slotServerWriteMessage отвечает за отправку нового сообщения всем участникам переписки.
+ * @param chatName - строка, содержащая название чата.
+ *
+ * При вызове слота:
+ * - ...
+ *
+ */
 void tcpServer::slotServerWriteMessage(string chatName)
 {
     chatName.erase(0,chatName.find("&") + 1);
@@ -126,7 +179,16 @@ void tcpServer::slotServerWriteMessage(string chatName)
             mp[id]->write(read_from_file(chatNameCopy, 1));
     }
 }
-
+/**
+ * @brief tcpServer::slotDisconect отвечает за разрыв соединения с пользователем
+ *
+ * Слот получает информацию о сокете, с которого был получен сигнал о разрыве соединения.
+ *
+ * Далее очищается поле в мапе, хранящем информации о сокетах подключенных пользователей,
+ * а также очищается соответствующее поле в БД.
+ *
+ * После всего счетчик пользователей уменьшается на 1.
+ */
 void tcpServer::slotDisconect()
 {
     QTcpSocket *clientsock = (QTcpSocket*)sender();
@@ -143,6 +205,16 @@ void tcpServer::slotDisconect()
 
     user_counts--;
 }
+/**
+ * @brief tcpServer::slotServerSendChatlist отвечает за отправку пользователю списка доступных чатов.
+ * @param login - переменная, отвечающая за имя пользователя, которому будет посылаться список чатов.
+ *
+ * Слот в векторе хранит результат вызова функции getChatlist.
+ *
+ * Далее по полученному имени пользователя определяет его сокет, вызвав функцию loginToSocket.
+ *
+ * После этого в необходимый сокет отправляется полученный список чатов.
+ */
 void tcpServer::slotServerSendChatlist(string login)
 {
     //вектор стрингов хранит список чатов, в которых состоит пользователь
@@ -155,7 +227,13 @@ void tcpServer::slotServerSendChatlist(string login)
             mp[id]->write(QByteArray::fromStdString(std::to_string(i+1)+ ". " + list[i]));
 
 }
-
+/**
+ * @brief tcpServer::slotLoadChatRoom отвечает за загрузку последних 50 сообщений в переписке
+ * @param servmsg - сообщение, полученное сервером
+ *
+ * Слот выделяет из полученной строки логин, имя чата и множитель, отвечающий за диапазон вывода
+ * ....
+ */
 void tcpServer::slotLoadChatRoom(string servmsg)
 {
     //парсим полученное сервером сообщение

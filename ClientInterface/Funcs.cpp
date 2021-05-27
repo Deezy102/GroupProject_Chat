@@ -48,7 +48,6 @@ bool checkText(QString str, QString fswitch)
 
     if (fswitch == "pass")
     {
-        forbidden.clear();
         forbidden = {"&", "_"};
     }
 
@@ -59,7 +58,7 @@ bool checkText(QString str, QString fswitch)
 
         return flag;
     }
-    else
-        return false;
+
+    return false;
 }
 

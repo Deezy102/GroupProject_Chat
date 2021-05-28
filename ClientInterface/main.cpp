@@ -1,3 +1,8 @@
+/**
+* \file
+* \brief Данный файл отвечает за реализацию main'а клиента
+*
+*/
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QString>

@@ -7,9 +7,9 @@
 
 using std::vector;
 
-QByteArray server_query(QString name, QString password, QString funcSwitch);
-QByteArray server_query(QString login, QString chatName, QString msg,  QString funcSwitch);
-QByteArray server_query(QString login, QString funcSwitch);
+QByteArray server_query(QString funcSwitch, QString first, QString second);
+QByteArray server_query(QString funcSwitch, QString first, QString second, QString msg);
+QByteArray server_query(QString funcSwitch, QString arg);
 
 bool correctLogPass(QString login, QString pass, QString verpass);
 bool checkText(QString logpass, QString fswitch);

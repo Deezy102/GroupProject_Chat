@@ -1,0 +1,33 @@
+version: '3.3'
+
+services:
+  server:
+    build: 
+      context: ./Server
+    
+    command: ./chatr_server
+    
+    ports:
+      - 12345:12345
+     
+    depends_on:
+      - database
+      
+  database:
+    build: 
+      context: ./Database
+    restart: always
+    
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST_AUTH_METHOD: trust
+     
+    ports:
+      - 5432:5432 
+  
+#  adminer:
+#    image: adminer
+#    restart: always
+#    ports:
+#      - 8080:8080

@@ -6,7 +6,6 @@
 
 bool flag = true;
 const string path = "D:\\chat\\chat_git\\GroupProject_Chat\\chatStorage\\";
-
 //string read_from_file(string chatName, int serialNum)
 //{
 //    //сериалНум - порядковый номер сообщения которое необходимо вывести
@@ -168,7 +167,7 @@ QSqlDatabase init_db()
         db.setHostName("localhost");
         db.setDatabaseName("chat");
         db.setUserName("postgres");
-        db.setPassword("    ");
+        db.setPassword("1234");
         flag = false;
     }
     else

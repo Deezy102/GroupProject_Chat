@@ -35,6 +35,7 @@ Page {
         onServerSucAuth: {
             root.sucAuth()
             incorrect.visible = false
+
         }
 
         onServerFailAuth: {
@@ -110,7 +111,7 @@ Page {
         onClicked: {
             client.receiveLogData(usernameField.text, passwordField.text)
             userLogin = usernameField.text
-            //root.sucAuth() //DELETE THIS!!!
+            root.sucAuth() //DELETE THIS!!!
         }
 
         Text {

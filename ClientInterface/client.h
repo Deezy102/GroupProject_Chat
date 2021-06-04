@@ -27,9 +27,20 @@
 class Client : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString chats READ chats WRITE setChats NOTIFY chatsChanged)
+    Q_PROPERTY(QString messages READ messages WRITE setMessages NOTIFY messagesChanged)
 public:
     explicit Client(QObject *parent = nullptr);
+    void setChats(const QString &a);
+    QString chats() const {
+           return m_chats;
+    }
 
+    void setMessages(const QString &a);
+
+    QString messages() const {
+        return m_messages;
+ }
     ~Client();
 signals:
     void serverSucReg(); // сигнал удачной регистарции
@@ -37,7 +48,10 @@ signals:
     void serverSucAuth();
     void serverFailAuth();
     void clientFailVerifpass();
-
+    void chatsChanged();
+    void messagesChanged();
+    void correctChat();
+    void incorrectChat();
 public slots:
     void receiveLogData(QString l_username, QString l_password);
     void receiveRegData(QString l_username, QString l_password, QString l_verpassword);
@@ -46,6 +60,7 @@ public slots:
     void receiveMessage(QString msg);
     void receiveChatCreation(QString chatname, QString contact);
     void receiveAddUserToChat(QString chatname, QString newuser);
+    void receiveCurrenChat(QString chatname);
 
 private slots:
     void slot_connected();
@@ -55,7 +70,10 @@ private slots:
 
 private:
     QTcpSocket *client_sock;
-    const QString ipAddress = "127.0.0.1";
+    QString m_chats = "jopa\nhui\npizda\nanal\nmanal";
+    QString cur_chat;
+    QString m_messages;
+    const QString ipAddress = "localhost";
 };
 
 

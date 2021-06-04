@@ -8,6 +8,8 @@ Page {
     signal backButtonClicked();
     property string inConversationWith : ""
 
+
+
     background: Rectangle {
         anchors.fill: parent
         anchors.rightMargin: 0
@@ -130,15 +132,15 @@ Page {
             model: ["Create Chat", "Contacts", "Etc"]
             delegate: ItemDelegate {
                 width: menu.width
-                Button {
-                    width: menu.width
-                    height: 40
-                    background: Rectangle {color: "#333333"}
-                    onClicked: {
-                        menu.close()
-                        chatCreationForm.open()
-                    }
-                }
+//                Button { //chatCreateButton
+//                    width: menu.width
+//                    height: 40
+//                    background: Rectangle {color: "#333333"}
+//                    onClicked: {
+//                        menu.close()
+//                        chatCreationForm.open()
+//                    }
+//                }
 
                 Text {
                     text: modelData
@@ -323,82 +325,58 @@ Page {
                 }
 
             }
-
-
-//            ScrollView {
-//                id: chatUsersScroll
-//                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-//                ScrollBar.vertical.interactive: true
-//                anchors.top: chatnameRect.bottom
-//                anchors.left: chatInfoPopup.left
-//                anchors.right: chatInfoPopup.right
-//                width: parent.width
-//                height: chatInfoPopup.height - chatnameRect.height
-//                contentHeight: hatInfoPopup.height - chatnameRect.height
-//                ListView {
-//                    id: chatUsersList
-//                    anchors.top: parent.top
-//                    anchors.bottom: parent.bottom
-//                    anchors.horizontalCenter: chatInfoPopup.contentItem.horizontalCenter
-//                    width: parent.width
-//                    model: ["User 1", "User 2", "User 2", "User 2", "User 2", "User 2", "User 2", "User 2", "User 2", "User 2", "User 2", "User 2"] //надо подгружать с сервера
-//                    delegate: ItemDelegate {
-//                        width: chatUsersList.width
-//                        height: 40
-//                        background: Rectangle {color: "#333333"}
-//                        down: true
-//                        Text {
-//                            text: modelData
-//                            color: "#ffffff"
-//                            anchors.fill: parent
-//                            font.pixelSize: 14
-//                            verticalAlignment: Text.AlignVCenter
-//                            horizontalAlignment: Text.AlignHCenter
-//                        }
-
-//                    }
-//                }
-//            }
-
         }
     }
 
+    TextField {
+        id: chatField
+        anchors.top: toolBar.bottom
+
+        width: parent.width * 0.3
+        height: 40
+
+        placeholderText: qsTr("Write chat...")
+        placeholderTextColor: "#ccc7c5c5"
+
+        color: "#ffffff"
+        font.pixelSize: 12
+
+
+        background: Rectangle {
+            anchors.fill: parent
+            visible: true
+            color: "#1f1f1f"
+            border.color: "#ff0040"
+
+        }
+        Keys.onPressed: { if (event.key == Qt.Key_Return) client.receiveCurrenChat(chatField.text);}
+
+    }
     ScrollView {
         id: chatListScroll
-        anchors.top: parent.top
+        anchors.top: chatField.bottom
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         width: parent.width * 0.3
-        height: root.height-toolBar.height
+        height: root.height-toolBar.height - chatField
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         ScrollBar.vertical.interactive: true
-        ListView {
-            id: chatListView
+        Text {
+            id: chatList
             anchors.left: parent.left
-            anchors.top: parrent.top
-            anchors.bottom: parent.bottom
-            height: parent.height - toolBar.height
-            model: ["Chat 1"] //скорее всего надо подгружать модель с сервера при каждом логине или добавлении чата
-
-            delegate: ItemDelegate {
-                Text {
-                    text: modelData
-                    color: "#ffffff"
-                    anchors.centerIn: parent
-                }
-                width: chatListView.width
-                onClicked: {
-                    console.log("clicked:", modelData)
-                    chatInfoButton.enabled = true
-                    root.inConversationWith = modelData
-
-                }
-
-            }
+            anchors.top: chatField.bottom
+            width: root.width * 0.3
+            height: root.height-toolBar.height-chatField
+            color: "#ffffff"
+            text: client.chats
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 14
+            font.bold: false
+            elide: Text.ElideRight
         }
     }
     ScrollView {
-        id: chatScroll
+        id: msgScroll
         anchors.top: parent.top
         anchors.bottom: msgField.top
         anchors.right: parent.right
@@ -406,21 +384,17 @@ Page {
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         ScrollBar.vertical.interactive: true
 
-
-        ListView {
-            id: chatView
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
+        Text {
+            id: msgList
             width: root.width * 0.7
-            model: ["qeawgedr"] //надо подгружать с сервера
-            delegate: ItemDelegate {
-                Text {
-                    text: modelData
-                    width: chatView.width
-                    color: "#ffffff"
-                }
-            }
+            height: root.height - toolBar.height - msgField
+            color: "#ffffff"
+            text: client.messages
+            leftPadding: 20
+            horizontalAlignment: Text.AlignLeft
+            font.pixelSize: 14
+            font.bold: false
+            elide: Text.ElideRight
         }
     }
     TextField {
@@ -428,7 +402,7 @@ Page {
         anchors.bottom: parent.bottom
         anchors.right: sendButton.left
 
-        width: parent.width - chatListView.width - sendButton.width
+        width: parent.width * 0.7- sendButton.width
         height: 40
 
         placeholderText: qsTr("Write message...")
@@ -489,5 +463,32 @@ Page {
 
 
     }
+    Connections {
+        target: client
+
+        onCorrectChat: {
+            inConversationWith = chatField.text
+            chatField.placeholderText = qsTr("Write chat...")
+            chatField.text = ""
+        }
+
+        onIncorrectChat: {
+            chatField.text = ""
+            chatField.placeholderText = "Try again"
+        }
+        onChatsChanged: {
+            chatList.text = client.chats
+        }
+
+        onMessageChanged: {
+            msgList.text = client.messages
+        }
+    }
 
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/

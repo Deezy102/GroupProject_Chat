@@ -34,7 +34,6 @@ bool write_to_file(string login, string chatName, string msg);
 QSqlDatabase init_db();
 //void close_db(QSqlDatabase db, QString db_name);
 
-QByteArray parsing(string msg);
 QByteArray authorization(string logpass);
 QByteArray registration(string logpass);
 QByteArray message(string msgData);

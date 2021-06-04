@@ -35,7 +35,6 @@ Page {
         onServerSucAuth: {
             root.sucAuth()
             incorrect.visible = false
-
         }
 
         onServerFailAuth: {

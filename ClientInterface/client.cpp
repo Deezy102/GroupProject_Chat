@@ -21,6 +21,23 @@ Client::Client(QObject *parent) : QObject(parent)
     connect(client_sock,SIGNAL(connected()),SLOT(slot_connected()));
     connect(client_sock,SIGNAL(readyRead()),SLOT(slot_readyRead()));
 }
+
+void Client::setChats(const QString &a)
+{
+    if (a != m_chats) {
+        m_chats = a;
+        emit chatsChanged();
+    }
+}
+
+void Client::setMessages(const QString &a)
+{
+    if (a != m_messages) {
+        m_messages = a;
+        emit messagesChanged();
+    }
+}
+
 /**
  * @brief Client::~Client деструктор класса.
  */
@@ -48,14 +65,29 @@ void Client::slot_disconnected()
  */
 void Client::parsing(QString msg)
 {
-    if (msg == "successful login")
+    qDebug() << "input parsing: " + msg;
+
+    if (msg == "successful login"){
+        QByteArray answer = "list&" + client_login.toUtf8();
+        client_sock->write(answer);
         emit serverSucAuth();
+    }
     if (msg == "invalid login or password")
         emit serverFailAuth();
     if (msg == "successful registration")
         emit serverSucReg();
     if (msg == "choose antoher login")
         emit serverFailReg();
+    if (msg.contains("list&")){
+        msg.remove(0, 5);
+        msg.replace("&", "\n" );
+        this->setChats(msg);
+    }
+    if (msg.contains("somethinmg")){
+        //some
+        m_messages = "";
+    }
+
 }
 /**
  * @brief Client::slot_readyRead считывает сообщение от сервера и вызывает функцию парсинга
@@ -92,8 +124,10 @@ void Client::receiveLogData(QString l_username, QString l_password)
  */
 void Client::receiveRegData(QString l_username, QString l_password, QString l_verpassword)
 {
-   if (correctLogPass(l_username, l_password, l_verpassword))
-       client_sock->write(server_query("reg", l_username, l_password));
+
+   if (correctLogPass(l_username, l_password, l_verpassword)){
+       qDebug() << "reg";
+       client_sock->write(server_query("reg", l_username, l_password));}
    else
        emit clientFailVerifpass();
 }
@@ -139,3 +173,16 @@ void Client::receiveAddUserToChat(QString chatname, QString newuser)
     //qDebug() << chatname << newuser;
 }
 
+void Client::receiveCurrenChat(QString chatname)
+{
+    if (m_chats.contains(chatname)){
+        emit correctChat();
+        cur_chat = chatname;
+        client_sock->write("chatld&"+client_login.toUtf8()+"&"+cur_chat.toUtf8());
+        qDebug() << m_chats;
+        //this->setMessages("sjgoiSJoisej");
+    }
+    else {
+        emit incorrectChat();
+    }
+}

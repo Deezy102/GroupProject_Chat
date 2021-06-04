@@ -175,7 +175,7 @@ QSqlDatabase init_db()
     if (db.open())
         qDebug() << "db has opened";
     else
-        qDebug() << "db has not opened";
+        qDebug() << "db has not opened" <<  db.lastError().text();
     return db;
 }
 /**

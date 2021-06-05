@@ -27,8 +27,11 @@ tcpServer::tcpServer(QObject *parent) : QObject(parent)
 
     if (serv->listen(QHostAddress(ipAddress), 12345))
     {
+
         server_status = true;
         user_counts = 0;
+        encryp.generatePairKey(pubserv, privserv, QRSAEncryption::RSA_128);
+
         qDebug() << "server started";
     }
     else
@@ -83,7 +86,8 @@ void tcpServer::slotNewConnection()
 
         int id = clientSock->socketDescriptor();
         mp[id] = clientSock;
-        mp[id]->write("u connected to the server");
+
+        mp[id]->write(pubserv);
 
         qDebug() << QString::fromUtf8("У нас новое соединение (сокет: %1). Количество пользователей:").arg(id) << user_counts;
 
@@ -108,11 +112,30 @@ void tcpServer::slotServerRead()
 
     while(clientsock->bytesAvailable() > 0)
     {
-        QByteArray transfer = clientsock->readAll();
-        msg = transfer.toStdString();
 
-        string keyWord = msg.substr(0,msg.find("&"));
+        QByteArray transfer = clientsock->readAll();
+
+        QByteArray buf = encryp.decode(transfer, privserv, QRSAEncryption::RSA_128);
+
+        msg = buf.toStdString();
+        clientkey = msg.substr(0,msg.find("&"));
+        int id = clientsock->socketDescriptor();
+
+        const auto found = mpk.find(id);
+        if(found==mpk.cend())
+            mpk[id] = clientkey;
+
+        msg = msg.erase(0,msg.find("&", msg.find("&") + 1) + 1);
+        qDebug() << "decode1 - key:: " + QByteArray::fromStdString(msg);
+        QByteArray decodeData = encryp.decode(QByteArray::fromStdString(msg),
+                                              QByteArray::fromStdString(clientkey), QRSAEncryption::RSA_128);
+        qDebug() << "decode2:: " + decodeData;
+        msg = decodeData.toStdString();
+        string keyWord = msg.substr(0, msg.find("&"));
         msg.erase(0,keyWord.size() + 1);
+
+        transfer.clear();
+
 
         if (keyWord == "auth")
             transfer = authorization(msg + "&" + std::to_string(clientsock->socketDescriptor()));
@@ -120,9 +143,10 @@ void tcpServer::slotServerRead()
         else if (keyWord== "reg")
             transfer = registration(msg);
 
-        else if (keyWord == "msg")
+        else if (keyWord == "msg"){
+            qDebug() << "func_message";
             transfer = message(msg);
-
+        }
         else if (keyWord == "chatcrt")
             transfer = chatCreation(msg);
 
@@ -139,10 +163,18 @@ void tcpServer::slotServerRead()
             slotServerSendChatlist(msg);
 
 
-        if (transfer.contains("msg&"))
+        if (transfer.contains("msg&")) {
+            qDebug() << "slotServerWriteMessage";
             slotServerWriteMessage(transfer.toStdString());
+        }
         else
-            clientsock->write(transfer);
+        {
+            qDebug() << "return transfer:::::::::" + transfer;
+            QByteArray encodeData = encryp.encode(transfer, QByteArray::fromStdString(clientkey), QRSAEncryption::RSA_128);
+            qDebug() << "return data::::" + encodeData;
+
+            clientsock->write(encodeData);
+        }
     }
 }
 /**
@@ -155,28 +187,43 @@ void tcpServer::slotServerRead()
  */
 void tcpServer::slotServerWriteMessage(string chatName)
 {
+    qDebug() << "chatName:::::" + QByteArray::fromStdString(chatName);
     chatName.erase(0,chatName.find("&") + 1);
 
-    string chatNameCopy = chatName;
+    QSqlDatabase db = init_db();
+    QSqlQuery qr = QSqlQuery(db);
+    qr.prepare(QString("select userlist from chatlist where chatname like '%1';").arg(QString::fromStdString(chatName)));
+    qr.exec();
+    qr.next();
 
-    while (!chatName.empty())
+
+    string logins = qr.value(0).toString().toStdString();
+    logins.erase(0, 1);
+    logins.erase(logins.length()-1, 1);
+
+    while (!logins.empty())
     {
-        string buf = "";
-        if (chatName.find("_") != string::npos)
-        {
-            buf = chatName.substr(0, chatName.find("_"));
-            chatName.erase(0, chatName.find("_") + 1);
-        }
-        else
-        {
-            buf = chatName;
-            chatName.erase(0, chatName.length());
-        }
+        string buf = logins.substr(0, logins.find(','));
+
+        logins.erase(0, buf.length()+1);
 
         int id = loginToSocket(buf);
 
         if (id != 0)
-            mp[id]->write(read_from_file(chatNameCopy, 1));
+        {
+            QByteArray message = "chatld&";
+            for (int i = 51; i >= 0; i--)
+            {
+                QByteArray check = read_from_file(chatName, i);
+                if (check != "")
+                    message +=  check + "&";
+            }
+            qDebug() << "msgToClient::::::::::::" + message;
+            QByteArray bufkey = QByteArray::fromStdString(mpk[id]);
+
+            QByteArray encodeData = encryp.encode(message, bufkey, QRSAEncryption::RSA_128);
+            mp[id]->write(encodeData);
+        }
     }
 }
 /**
@@ -221,11 +268,14 @@ void tcpServer::slotServerSendChatlist(string login)
     vector<string> list = getChatlist(login);
 
     int id = loginToSocket(login); //получаем сокет по логину
-
-    if (id != 0)
-        for (int i = 0; i < list.size(); i++)//посылаем на клиент по одному названию чата
-            mp[id]->write(QByteArray::fromStdString(std::to_string(i+1)+ ". " + list[i]));
-
+    QByteArray message = "list&";
+    if (id != 0){
+        for (int i = 0; i < list.size(); i++) {//посылаем на клиент по одному названию чата
+            message += QByteArray::fromStdString(list[i]+"&");
+        }
+        QByteArray encodeData = encryp.encode(message, QByteArray::fromStdString(clientkey), QRSAEncryption::RSA_128);
+        mp[id]->write(encodeData);
+    }
 }
 /**
  * @brief tcpServer::slotLoadChatRoom отвечает за загрузку последних 50 сообщений в переписке
@@ -239,7 +289,8 @@ void tcpServer::slotLoadChatRoom(string servmsg)
     //парсим полученное сервером сообщение
     string login = servmsg.substr(0,servmsg.find("&"));
     string chatName = servmsg.substr(servmsg.find("&") + 1, servmsg.rfind("&") - servmsg.find("&") - 1);
-    int multiplier = std::stoi(servmsg.substr(servmsg.rfind("&") + 1, servmsg.length()));
+    int multiplier = 1;
+            //std::stoi(servmsg.substr(servmsg.rfind("&") + 1, servmsg.length()));
 
     int id = loginToSocket(login);//получаем сокет по логину
     if(id != 0)
@@ -248,9 +299,19 @@ void tcpServer::slotLoadChatRoom(string servmsg)
         //и передается в служебном сообщении
         if (multiplier == 1)//первое открытие переписки
         {
-            for (int i = 0; i < 51; i++)
-                //добавить проверку на пустую строку либо здесь либо в чтении из файла
-                mp[id]->write(read_from_file(chatName, 1));
+
+            QByteArray message = "chatld&";
+            for (int i = 51; i >= 0; i--)
+            {
+                QByteArray check = read_from_file(chatName, i);
+                if (check != "")
+                    message +=  check + "&";
+            }
+            qDebug() << "msgToClient::::::::::::" + message;
+            QByteArray bufkey = QByteArray::fromStdString(mpk[id]);
+            qDebug() << "keyyy:::" + bufkey;
+            QByteArray encodeData = encryp.encode(message, bufkey, QRSAEncryption::RSA_128);
+            mp[id]->write(encodeData);
         }
         else//просмотр старых сообщений
         {

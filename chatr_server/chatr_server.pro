@@ -17,7 +17,7 @@ SOURCES += \
         database.cpp \
         main.cpp \
         tcpserver.cpp
-
+include(D:/Chat_project/123/test/test/Qt-Secret/src/Qt-Secret.pri)
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

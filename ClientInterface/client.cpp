@@ -77,6 +77,13 @@ void Client::parsing(QByteArray msg)
         client_sock->write(encodeData1);
         emit serverSucAuth();
     }
+    if (msg == "successful chat creation")
+    {
+        QByteArray answer = server_query("list", client_login);
+        QByteArray encodeData1 = encryption(answer, privcl, pubcl, servkey);
+        client_sock->write(encodeData1);
+    }
+
     if (msg == "invalid login or password")
         emit serverFailAuth();
     if (msg == "successful registration")
@@ -201,6 +208,7 @@ void Client::receiveChatCreation(QString chatname, QString contact)
 {
     if (checkText(chatname, "") && checkText(contact, ""))
     {
+        qDebug() << "chat_creation ::::::::::::::::";
         contact = client_login + "&" + contact;
         QByteArray msg = server_query("chatcrt", chatname, contact);
         QByteArray encodeData1 = encryption(msg, privcl, pubcl, servkey);

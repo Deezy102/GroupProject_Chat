@@ -367,7 +367,7 @@ QByteArray chatCreation(std::string chatData)
     qr.exec();
     qr.next();
 
-    if (qr.value(0).toInt() == 1)
+    if (qr.value(0).toInt() == 1 && contact1 != contact2)
     {
         qr.prepare(QString("insert into chatlist (chatname, userlist) values ('%1', '{%2, %3}')").arg(chatName, contact1, contact2));
         qr.exec();

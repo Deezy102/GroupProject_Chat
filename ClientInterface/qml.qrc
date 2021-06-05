@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>ghoul_eye.png</file>
+        <file>LoginPage.qml</file>
+        <file>ChatPage.qml</file>
+    </qresource>
+</RCC>

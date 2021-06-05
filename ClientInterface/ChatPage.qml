@@ -103,10 +103,10 @@ Page {
     }
     Drawer {
         id: menu
+        focus: true
         height: parent.height
         width: parent.width * 0.3
         background: Rectangle {color: "#333333"}
-
         Rectangle {
             id: userLoginRect
             height: 80
@@ -124,37 +124,34 @@ Page {
                 horizontalAlignment: Text.AlignHCenter
             }
         }
-        ListView {
-            id: menuList
+
+        Button {
+            id: chatCreateButton
             anchors.top: userLoginRect.bottom
             width: menu.width
-            height: parent.height - userLoginRect.height
-            model: ["Create Chat", "Contacts", "Etc"]
-            delegate: ItemDelegate {
-                width: menu.width
-//                Button { //chatCreateButton
-//                    width: menu.width
-//                    height: 40
-//                    background: Rectangle {color: "#333333"}
-//                    onClicked: {
-//                        menu.close()
-//                        chatCreationForm.open()
-//                    }
-//                }
-
-                Text {
-                    text: modelData
-                    color: "#ffffff"
-                    anchors.fill: parent
-                    font.pixelSize: 14
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignHCenter
-
-                }
-                focus: true
-
+            height: 40
+            background: Rectangle {color: "#333333"}
+            Text {
+                text: "Create chat"
+                color: "#ffffff"
+                width: parent.width
+                height: parent.height
+                font.pixelSize: 14
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
 
             }
+            onClicked: {
+                console.log("create clicked")
+                menu.close()
+                chatCreationForm.open()
+            }
+
+
+
+
+
+
         }
     }
     Popup {
@@ -164,7 +161,6 @@ Page {
         anchors.centerIn: parent
         modal: true
         focus: true
-        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
         contentItem: Rectangle {
             color: "#333333"
@@ -221,12 +217,14 @@ Page {
 
                 width: 80
                 height: 40
+
                 background: Rectangle {
                     anchors.fill: parent
                     visible: true
                     color: "#1f1f1f"
                     border.color: "#ff0040"
                 }
+
 
                 Text {
                     anchors.fill: parent
@@ -238,7 +236,10 @@ Page {
                     elide: Text.ElideRight
                 }
 
-                onClicked: client.receiveChatCreation(chatname.text, contact.text)
+                onClicked: {
+                    client.receiveChatCreation(chatname.text, contact.text)
+                    chatCreationForm.close()
+                }
             }
         }
 
@@ -303,10 +304,12 @@ Page {
                 height: 40
                 width: 80
                 anchors.bottom: parent.bottom
-                anchors.right: parent.right
+                anchors.bottomMargin: 20
+                anchors.horizontalCenter: parent.horizontalCenter
                 background: Rectangle {
                     anchors.fill: parent
                     visible: true
+                    radius: 20
                     color: "#1f1f1f"
                     border.color: "#ff0040"
                 }
@@ -411,7 +414,6 @@ Page {
         color: "#ffffff"
         font.pixelSize: 12
 
-
         background: msgFieldBackground
 
         Rectangle {
@@ -422,6 +424,13 @@ Page {
             border.color: "#ff0040"
 
         }
+
+        Keys.onPressed: { if (event.key == Qt.Key_Return){
+                client.receiveMessage(msgField.text);
+                msgField.text = "";
+            }
+        }
+
 
 
     }
@@ -470,6 +479,7 @@ Page {
             inConversationWith = chatField.text
             chatField.placeholderText = qsTr("Write chat...")
             chatField.text = ""
+            chatInfoButton.enabled = true;
         }
 
         onIncorrectChat: {

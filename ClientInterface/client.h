@@ -12,7 +12,7 @@
 #include <QDebug>
 #include <string>
 #include <QTcpSocket>
-
+#include <qrsaencryption.h>
 /**
  * @brief class Client наследник QObject
  * Данный класс отвечает за реализацию клиента в проекте SSSchat.
@@ -55,7 +55,7 @@ signals:
 public slots:
     void receiveLogData(QString l_username, QString l_password);
     void receiveRegData(QString l_username, QString l_password, QString l_verpassword);
-    void parsing(QString msg);
+    void parsing(QByteArray msg);
     void reconnect();
     void receiveMessage(QString msg);
     void receiveChatCreation(QString chatname, QString contact);
@@ -70,10 +70,17 @@ private slots:
 
 private:
     QTcpSocket *client_sock;
+    const QString ipAddress = "localhost";
+
     QString m_chats = "jopa\nhui\npizda\nanal\nmanal";
     QString cur_chat;
     QString m_messages;
-    const QString ipAddress = "localhost";
+
+    QRSAEncryption encryp;
+    QByteArray pubcl, privcl;
+    QByteArray servkey;
+
+
 };
 
 

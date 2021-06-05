@@ -5,49 +5,12 @@
 #include "database.h"
 
 bool flag = true;
-const string path = "D:\\chat\\chat_git\\GroupProject_Chat\\chatStorage\\";
-//string read_from_file(string chatName, int serialNum)
-//{
-//    //сериалНум - порядковый номер сообщения которое необходимо вывести
-//    //для слотСерверВрайтМесседж значение вшито в код и равно 0(новейшее сообщение переписки)
-//    //для слотЛодЧатРум задается итератором из заданного множителем диапазона(первая подгрузка переписки и просмотр старых сообщений)
-//    string str;
-//    ifstream file(path + chatName + ".txt", std::ios::in);
-//    if (!file.is_open())
-//    {
-//        qDebug() << "try again";
-//    }
-//    else
-//    {
-
-//        string buf;
-//        int counter = 0;
-//        //цикл переводит курсор на нужную строку
-//        while (!file.eof() && counter < serialNum)
-//        {
-//            std::getline(file, buf);
-//            counter++;
-//            buf = "";
-//        }
-//        //считываем нужное сообщение
-//        std::getline(file, buf);
-//        str = "mChat&" + buf;//подумал, что надо добавить какой-то флаг для вычленения сообщения на клиенте
-//    }
-
-//    file.close();
-//    //добавить проверку на пустоту строки, чтобы не забивать модели пустыми сообщениями
-//    return str;
-//}
-
-/**
- * @warning будет использоваться другая!!!!
- * @brief read_from_file
- * @param chatName
- * @param counterNum
- * @return
- */
-QByteArray read_from_file(string chatName, int counterNum)
+const string path = "D:\\Chat_project\\GroupProject_Chat\\chatStorage\\";
+QByteArray read_from_file(string chatName, int serialNum)
 {
+    //сериалНум - порядковый номер сообщения которое необходимо вывести
+    //для слотСерверВрайтМесседж значение вшито в код и равно 0(новейшее сообщение переписки)
+    //для слотЛодЧатРум задается итератором из заданного множителем диапазона(первая подгрузка переписки и просмотр старых сообщений)
     string str;
     ifstream file(path + chatName + ".txt", std::ios::in);
     if (!file.is_open())
@@ -56,18 +19,56 @@ QByteArray read_from_file(string chatName, int counterNum)
     }
     else
     {
+
+        string buf;
         int counter = 0;
-        while (!file.eof() && counter < counterNum)
+        //цикл переводит курсор на нужную строку
+        while (!file.eof() && counter < serialNum)
         {
-            string buf;
             std::getline(file, buf);
-            str += buf + " &";
             counter++;
+            buf = "";
         }
+        //считываем нужное сообщение
+        std::getline(file, buf);
+        str = buf;//подумал, что надо добавить какой-то флаг для вычленения сообщения на клиенте
+        qDebug() << "strReadFromFile:::" + QByteArray::fromStdString(str);
     }
+
     file.close();
+    //добавить проверку на пустоту строки, чтобы не забивать модели пустыми сообщениями
     return QByteArray::fromStdString(str);
 }
+
+/**
+ * @warning будет использоваться другая!!!!
+ * @brief read_from_file
+ * @param chatName
+ * @param counterNum
+ * @return
+ */
+//QByteArray read_from_file(string chatName, int counterNum)
+//{
+//    string str;
+//    ifstream file(path + chatName + ".txt", std::ios::in);
+//    if (!file.is_open())
+//    {
+//        qDebug() << "try again";
+//    }
+//    else
+//    {
+//        int counter = 0;
+//        while (!file.eof() && counter < counterNum)
+//        {
+//            string buf;
+//            std::getline(file, buf);
+//            str += buf + " &";
+//            counter++;
+//        }
+//    }
+//    file.close();
+//    return QByteArray::fromStdString(str);
+//}
 /**
  * @brief write_to_file отвечает за запись сообщения в соответствующий файл переписки
  * @param login - переменная, отвечающая за имя пользователя
@@ -167,7 +168,7 @@ QSqlDatabase init_db()
         db.setHostName("localhost");
         db.setDatabaseName("chat");
         db.setUserName("postgres");
-        db.setPassword("1234");
+        db.setPassword("    ");
         flag = false;
     }
     else
@@ -271,12 +272,15 @@ QByteArray authorization(string logpass)
  */
 QByteArray message(string msgData)
 {
+    qDebug() << "msgData:::" + QByteArray::fromStdString(msgData);
     string login = msgData.substr(0,msgData.find("&"));
+    qDebug() << "login:::" + QByteArray::fromStdString(login);
     msgData.erase(0,login.size() + 1);
     string chatName = msgData.substr(0, msgData.find("&"));
+    qDebug() << "chatName:::" + QByteArray::fromStdString(chatName);
     msgData.erase(0,chatName.size() + 1);
     string msg = msgData;
-
+    qDebug() << "msg:::" + QByteArray::fromStdString(msgData);
     write_to_file(login, chatName, msg);
 
     return QByteArray::fromStdString("msg&" +chatName);
@@ -462,7 +466,7 @@ vector<string> getChatlist(string login){
     qr.exec();
     //добавляем названия чата в вектор стрингов
     while(qr.next())
-        list.push_back(qr.value(0).toString().toStdString() + ";");
+        list.push_back(qr.value(0).toString().toStdString());
 
     db.close();
 

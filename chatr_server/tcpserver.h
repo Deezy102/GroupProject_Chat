@@ -17,6 +17,7 @@
 #include <QtNetwork>
 #include <QByteArray>
 #include <QDebug>
+#include <qrsaencryption.h>
 
 /**
  * @brief The tcpServer class: наследник QObject
@@ -49,11 +50,16 @@ public slots:
 private:
     QTcpServer * serv;
     QTcpSocket * sock;
+    const QString ipAddress = "127.0.0.1";
     bool server_status;
     int user_counts;
-    std::string msg;
     QMap<int, QTcpSocket*> mp;
-    const QString ipAddress = "127.0.0.1";
+    QMap<int, string> mpk;
+    std::string msg;
+
+    QByteArray pubserv, privserv;
+    string clientkey;
+    QRSAEncryption encryp;
 };
 
 #endif // TCPSERVER_H

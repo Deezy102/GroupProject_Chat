@@ -51,6 +51,7 @@ QByteArray server_query(QString funcSwitch, QString first, QString second, QStri
     QString message = funcSwitch+"&"+first+"&"+second+"&"+msg;
     QByteArray array;
     array.append(message.toUtf8());
+    qDebug() << "array:::::::::::" + array;
     return array;
 }
 /**
@@ -95,3 +96,25 @@ bool checkText(QString str, QString fswitch)
     return false;
 }
 
+/**
+ * @brief encryption преобразует сформированное сообщение серверу в зашифрованный вид
+ * @param msg -  исходное сформированное сообщение
+ * @param privcl - приватный ключ клиента
+ * @param pubcl - публичный ключ клиента
+ * @param servkey - публичный ключ клиента
+ * @return возвращает зашифрованное сообщение
+ *
+ * Описание работы функции:
+ *
+ * Сообщение шифруется приватным ключом клиента. После чего к зафрованному сообщению
+ * добавляется публичный ключ клиента. Данное сочетание данных шифруется публичным ключом сервера.
+ */
+QByteArray encryption(QByteArray msg, QByteArray privcl, QByteArray pubcl, QByteArray servkey)
+{
+    QRSAEncryption encryp;
+    QByteArray encodeData = encryp.encode(msg, privcl, QRSAEncryption::Rsa::RSA_128);
+    QByteArray data = pubcl +"&KEY&" + encodeData;
+    QByteArray encodeData1 = encryp.encode(data, servkey, QRSAEncryption::Rsa::RSA_128);
+
+    return encodeData1;
+}

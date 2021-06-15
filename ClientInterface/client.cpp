@@ -18,10 +18,10 @@ Client::Client(QObject *parent) : QObject(parent)
 {
     client_sock = new QTcpSocket(this);
     client_sock->connectToHost(ipAddress, 12345);
-    if (client_sock->isValid()){
 
+    if (client_sock->isValid())
         encryp.generatePairKey(pubcl, privcl, QRSAEncryption::Rsa::RSA_128);
-    }
+
     connect(client_sock,SIGNAL(connected()),SLOT(slot_connected()));
     connect(client_sock,SIGNAL(readyRead()),SLOT(slot_readyRead()));
 }
@@ -69,19 +69,17 @@ void Client::slot_disconnected()
  */
 void Client::parsing(QByteArray msg)
 {
-    qDebug() << "input parsing: " + msg;
-
     if (msg == "successful login"){
         QByteArray answer = server_query("list", client_login);
-        QByteArray encodeData1 = encryption(answer, privcl, pubcl, servkey);
-        client_sock->write(encodeData1);
+        QByteArray encodeData = encryption(answer, privcl, pubcl, servkey);
+        client_sock->write(encodeData);
         emit serverSucAuth();
     }
     if (msg == "successful chat creation")
     {
         QByteArray answer = server_query("list", client_login);
-        QByteArray encodeData1 = encryption(answer, privcl, pubcl, servkey);
-        client_sock->write(encodeData1);
+        QByteArray encodeData = encryption(answer, privcl, pubcl, servkey);
+        client_sock->write(encodeData);
     }
 
     if (msg == "invalid login or password")
@@ -102,26 +100,19 @@ void Client::parsing(QByteArray msg)
     {
         msg.remove(0, 7);
         msg.replace("&", "\n");
-        qDebug() << "setMessages::::::::::::::::::::" << msg;
+
         this->setMessages(msg);
-
     }
-
 }
-
-
 /**
  * @brief Client::slot_readyRead считывает сообщение от сервера и вызывает функцию парсинга
  */
 void Client::slot_readyRead()
 {
     QByteArray array;
-    //std::string message = "";
 
     while(client_sock->bytesAvailable()>0)
-    {
         array = client_sock->readAll();
-    }
 
     if (servkey.length() == 0)
         servkey = array;
@@ -185,19 +176,12 @@ void Client::reconnect()
  */
 void Client::receiveMessage(QString message)
 {
-
     if (!message.isEmpty())
     {
-
         QByteArray msg = server_query("msg", client_login, cur_chat, message);
-
-        //qDebug() << "sending2....";
-
         QByteArray encodeData1 = encryption(msg, privcl, pubcl, servkey);
-        //qDebug() << "sending3...." << encodeData1;
         client_sock->write(encodeData1);
     }
-
 }
 /**
  * @brief Client::receiveChatCreation отправка данных для создания чата
@@ -208,7 +192,6 @@ void Client::receiveChatCreation(QString chatname, QString contact)
 {
     if (checkText(chatname, "") && checkText(contact, ""))
     {
-        qDebug() << "chat_creation ::::::::::::::::";
         contact = client_login + "&" + contact;
         QByteArray msg = server_query("chatcrt", chatname, contact);
         QByteArray encodeData1 = encryption(msg, privcl, pubcl, servkey);
@@ -234,12 +217,8 @@ void Client::receiveCurrenChat(QString chatname)
         emit correctChat();
         cur_chat = chatname;
         QByteArray msg = server_query("chatld", client_login, cur_chat);
-        //qDebug() << "msg:::::::" + msg;
         QByteArray encodeData1 = encryption(msg, privcl, pubcl, servkey);
-        //qDebug() << "encode:::::::" + encodeData1;
         client_sock->write(encodeData1);
-
-
     }
     else {
         emit incorrectChat();

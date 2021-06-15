@@ -70,9 +70,9 @@ private slots:
 
 private:
     QTcpSocket *client_sock;
-    const QString ipAddress = "localhost";
+    const QString ipAddress = "127.0.0.1";
 
-    QString m_chats = "jopa\nhui\npizda\nanal\nmanal";
+    QString m_chats = "";
     QString cur_chat;
     QString m_messages;
 

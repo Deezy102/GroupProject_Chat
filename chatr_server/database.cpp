@@ -19,7 +19,6 @@ QByteArray read_from_file(string chatName, int serialNum)
     }
     else
     {
-
         string buf;
         int counter = 0;
         //цикл переводит курсор на нужную строку
@@ -39,36 +38,6 @@ QByteArray read_from_file(string chatName, int serialNum)
     //добавить проверку на пустоту строки, чтобы не забивать модели пустыми сообщениями
     return QByteArray::fromStdString(str);
 }
-
-/**
- * @warning будет использоваться другая!!!!
- * @brief read_from_file
- * @param chatName
- * @param counterNum
- * @return
- */
-//QByteArray read_from_file(string chatName, int counterNum)
-//{
-//    string str;
-//    ifstream file(path + chatName + ".txt", std::ios::in);
-//    if (!file.is_open())
-//    {
-//        qDebug() << "try again";
-//    }
-//    else
-//    {
-//        int counter = 0;
-//        while (!file.eof() && counter < counterNum)
-//        {
-//            string buf;
-//            std::getline(file, buf);
-//            str += buf + " &";
-//            counter++;
-//        }
-//    }
-//    file.close();
-//    return QByteArray::fromStdString(str);
-//}
 /**
  * @brief write_to_file отвечает за запись сообщения в соответствующий файл переписки
  * @param login - переменная, отвечающая за имя пользователя
@@ -138,20 +107,6 @@ bool write_to_file(string login, string chatName, string msg)
     }
     return true;
 }
-
-//QByteArray parsing(string msg)
-//{
-//    string buf = msg.substr(0,msg.find("&"));
-//    msg.erase(0,buf.size() + 1);
-
-//    if (buf == "auth")
-//        return authorization(msg);
-//    if (buf == "reg")
-//        return registration(msg);
-//    if (buf == "msg")
-//        return message(msg);
-//    return "error";
-//}
 /**
  * @brief init_db отвечает за подключение и открытие базы данных PostgreSQL
  * @return возвращается объект базы данных
@@ -272,18 +227,14 @@ QByteArray authorization(string logpass)
  */
 QByteArray message(string msgData)
 {
-    qDebug() << "msgData:::" + QByteArray::fromStdString(msgData);
     string login = msgData.substr(0,msgData.find("&"));
-    qDebug() << "login:::" + QByteArray::fromStdString(login);
     msgData.erase(0,login.size() + 1);
     string chatName = msgData.substr(0, msgData.find("&"));
-    qDebug() << "chatName:::" + QByteArray::fromStdString(chatName);
     msgData.erase(0,chatName.size() + 1);
     string msg = msgData;
-    qDebug() << "msg:::" + QByteArray::fromStdString(msgData);
     write_to_file(login, chatName, msg);
 
-    return QByteArray::fromStdString("msg&" +chatName);
+    return QByteArray::fromStdString("msg&" + chatName);
 }
 /**
  * @brief BDSocketClear отвечает за очистку столбца current_socket в таблице users.
@@ -292,7 +243,6 @@ QByteArray message(string msgData)
 void BDSocketClear(int socket_id)
 {
     QSqlDatabase db = init_db();
-
     QSqlQuery qr = QSqlQuery(db);
 
     qr.prepare(QString("update users set current_socket = null where current_socket = %1;").arg(socket_id));
@@ -358,7 +308,6 @@ QByteArray chatCreation(std::string chatData)
     chatData.erase(0, chatData.find("&") + 1);
     QString contact2 = QString::fromStdString(chatData);
 
-
     QSqlDatabase db = init_db();
 
     QSqlQuery qr = QSqlQuery(db);
@@ -371,7 +320,6 @@ QByteArray chatCreation(std::string chatData)
     {
         qr.prepare(QString("insert into chatlist (chatname, userlist) values ('%1', '{%2, %3}')").arg(chatName, contact1, contact2));
         qr.exec();
-        //qDebug() << "error: " << qr.lastError().text(); //ВЫВОД ОШИБКИ ЗАПРОСА БД
         db.close();
 
         return "successful chat creation";
@@ -402,7 +350,6 @@ QByteArray chatUserAdd(std::string msgData)
     QString chatName = QString::fromStdString(msgData.substr(0, msgData.find("&")));
     msgData.erase(0,chatName.size() + 1);
     QString userLogin = QString::fromStdString(msgData.substr(0, msgData.find("&")));
-    //msgData.erase(0,chatName.size() + 1);
 
     QSqlDatabase db = init_db();
 
@@ -438,7 +385,6 @@ QByteArray chatUserDel(std::string msgData)
     QString chatName = QString::fromStdString(msgData.substr(0, msgData.find("&")));
     msgData.erase(0,chatName.size() + 1);
     QString userLogin = QString::fromStdString(msgData.substr(0, msgData.find("&")));
-    //msgData.erase(0,chatName.size() + 1);
 
     QSqlDatabase db = init_db();
 
@@ -472,4 +418,4 @@ vector<string> getChatlist(string login){
 
     return list;
 }
->>>>>>> f1b5f12df592d15eb8dc506673b0b96ad3905859
+

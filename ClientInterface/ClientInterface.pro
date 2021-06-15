@@ -12,7 +12,7 @@ SOURCES += \
         funcs.cpp \
         main.cpp \
 
-include(D:/Chat_project/123/test/test/Qt-Secret/src/Qt-Secret.pri)
+include(D:/Code/GroupProject_Chat/Qt-Secret/src/Qt-Secret.pri)
 RESOURCES += qml.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model

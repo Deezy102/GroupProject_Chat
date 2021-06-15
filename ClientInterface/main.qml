@@ -6,6 +6,7 @@ import QtQuick.Dialogs 1.2
 
 ApplicationWindow {
     id: window
+    property string userLogin
     visible: true
     width: 640
     height: 480
@@ -13,6 +14,8 @@ ApplicationWindow {
     title: "SSSchat"
 
     property int defMargin: 10
+
+
 
     StackView {
         id: stackview
@@ -31,6 +34,7 @@ ApplicationWindow {
     ChatPage {
         id: chatPage
         visible: false
+
         onBackButtonClicked: {
             stackview.pop(logPage);
         }

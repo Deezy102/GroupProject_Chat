@@ -10,8 +10,9 @@ CONFIG += c++11
 SOURCES += \
         client.cpp \
         funcs.cpp \
-        main.cpp
+        main.cpp \
 
+include(D:/Chat_project/123/test/test/Qt-Secret/src/Qt-Secret.pri)
 RESOURCES += qml.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
@@ -27,7 +28,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     client.h \
-    funcs.h
+    funcs.h \
 
 DISTFILES += \
-    Style.qml
+

@@ -1,16 +1,21 @@
+/**
+* \file
+* \brief Данный файл отвечает за реализацию main'а клиента
+*
+*/
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QString>
 #include <QQmlContext>
+#include <QQmlComponent>
+#include <QQuickView>
+#include <QQmlProperty>
 #include "client.h"
 
 int main(int argc, char *argv[])
 {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-#endif
-
     QGuiApplication app(argc, argv);
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     Client client;
 
@@ -18,6 +23,13 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     QQmlContext *context = engine.rootContext();
     context->setContextProperty("client", &client);
+    //context->setContextProperty("chttext", "jopaq23r42");
+
+    QQuickView view;
+    view.engine()->rootContext()->setContextProperty("client", &client);
+    view.setSource(QUrl::fromLocalFile("ChatPage.qml"));
+
+
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

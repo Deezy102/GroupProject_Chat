@@ -1,3 +1,9 @@
+/**
+* \file
+* \brief Данный файл отвечает за реализацию main'а сервера
+*
+*/
+
 #include <QCoreApplication>
 #include "tcpserver.h"
 #include "database.h"
